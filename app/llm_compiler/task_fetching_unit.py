@@ -2,14 +2,15 @@ import re
 import time
 from concurrent.futures import ThreadPoolExecutor, wait
 from typing import Any, Dict, Iterable, List, Union
+
 from langchain_core.messages import BaseMessage, FunctionMessage
 from langchain_core.runnables import (
     chain as as_runnable,
 )
+from typing_extensions import TypedDict
 
 from app.llm_compiler.planner import planner
 from output_parser import Task
-from typing_extensions import TypedDict
 
 
 def _get_observations(messages: List[BaseMessage]) -> Dict[int, Any]:
@@ -50,8 +51,8 @@ def _execute_task(task, observations, config):
         return tool_to_use.invoke(resolved_args, config)
     except Exception as e:
         return (
-            f"ERROR(Failed to call {tool_to_use.name} with args {args}."
-            + f" Args resolved to {resolved_args}. Error: {repr(e)})"
+                f"ERROR(Failed to call {tool_to_use.name} with args {args}."
+                + f" Args resolved to {resolved_args}. Error: {repr(e)})"
         )
 
 
@@ -90,7 +91,7 @@ def schedule_task(task_inputs, config):
 
 
 def schedule_pending_task(
-    task: Task, observations: Dict[int, Any], retry_after: float = 0.2
+        task: Task, observations: Dict[int, Any], retry_after: float = 0.2
 ):
     while True:
         deps = task["dependencies"]
@@ -131,8 +132,8 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
             )
             args_for_tasks[task["idx"]] = task["args"]
             if (
-                # Depends on other tasks
-                deps and (any([dep not in observations for dep in deps]))
+                    # Depends on other tasks
+                    deps and (any([dep not in observations for dep in deps]))
             ):
                 futures.append(
                     executor.submit(
@@ -166,6 +167,7 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
 
 
 import itertools
+
 
 @as_runnable
 def plan_and_schedule(state):

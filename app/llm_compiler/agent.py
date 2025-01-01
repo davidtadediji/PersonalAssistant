@@ -1,13 +1,16 @@
+from typing import Annotated, TypedDict
+
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
-from langchain_core.messages import AIMessage, HumanMessage
-from typing import Annotated, TypedDict
+
 from app.llm_compiler.joiner import joiner
 from app.llm_compiler.task_fetching_unit import plan_and_schedule
 
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
+
 
 def should_continue(state):
     messages = state["messages"]
@@ -31,7 +34,6 @@ graph_builder.add_conditional_edges(
 graph_builder.add_edge(START, "plan_and_schedule")
 chain = graph_builder.compile()
 
-
 # Display graph
 image_data = chain.get_graph().draw_mermaid_png()
 
@@ -44,7 +46,7 @@ project_root = (
     Path(__file__).resolve().parent
 )  # This is the directory where server.py is located
 resources_dir = (
-    project_root / "../../resources"
+        project_root / "../../resources"
 )  # Use the / operator to join paths (pathlib feature)
 
 # Ensure the resources directory exists
@@ -61,7 +63,7 @@ img = PILImage.open("../../resources/llm_compiler.png")
 img.show()
 
 for step in chain.stream(
-    {"messages": [HumanMessage(content="what is the home town of the 2024 Australia open winner?")]}
+        {"messages": [HumanMessage(content="what is the difference km between my exact current location  and  New york")]}
 ):
     print(step)
     print("---")

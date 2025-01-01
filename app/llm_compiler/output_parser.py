@@ -69,7 +69,7 @@ def default_dependency_rule(idx, args: str):
 
 
 def _get_dependencies_from_graph(
-    idx: int, tool_name: str, args: Dict[str, Any]
+        idx: int, tool_name: str, args: Dict[str, Any]
 ) -> dict[str, list[str]]:
     """Get dependencies from a graph."""
     if tool_name == "join":
@@ -86,11 +86,11 @@ class Task(TypedDict):
 
 
 def instantiate_task(
-    tools: Sequence[BaseTool],
-    idx: int,
-    tool_name: str,
-    args: Union[str, Any],
-    thought: Optional[str] = None,
+        tools: Sequence[BaseTool],
+        idx: int,
+        tool_name: str,
+        args: Union[str, Any],
+        thought: Optional[str] = None,
 ) -> Task:
     if tool_name == "join":
         tool = "join"
@@ -135,15 +135,15 @@ class LLMCompilerPlanParser(BaseTransformOutputParser[dict], extra="allow"):
         return list(self._transform([text]))
 
     def stream(
-        self,
-        input: str | BaseMessage,
-        config: RunnableConfig | None = None,
-        **kwargs: Any | None,
+            self,
+            input: str | BaseMessage,
+            config: RunnableConfig | None = None,
+            **kwargs: Any | None,
     ) -> Iterator[Task]:
         yield from self.transform([input], config, **kwargs)
 
     def ingest_token(
-        self, token: str, buffer: List[str], thought: Optional[str]
+            self, token: str, buffer: List[str], thought: Optional[str]
     ) -> Iterator[Tuple[Optional[Task], str]]:
         buffer.append(token)
         if "\n" in token:

@@ -2,16 +2,17 @@ import logging
 import os
 import sys
 from logging.handlers import RotatingFileHandler
-
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
-app_name = os.getenv("APP_NAME")
-log_name = os.getenv("LOG_NAME")
+# Retrieve configuration from environment variables or set defaults
+app_name = os.getenv("APP_NAME", "default_app_name")
+log_name = os.getenv("LOG_NAME", "default_log_name")
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
-
-def setup_logger(name=app_name, log_file=f"{log_name}.log", level=logging.INFO):
+def setup_logger(name=app_name, log_file=f"{log_name}.log", level=log_level):
     """
     Create a comprehensive logger with multiple handlers.
 
@@ -20,14 +21,17 @@ def setup_logger(name=app_name, log_file=f"{log_name}.log", level=logging.INFO):
     - File logging with rotation
     - Structured logging
     """
-    # Ensure log directory exists
-    log_dir = os.path.dirname(log_file)
-    if log_dir and not os.path.exists(log_dir):
+    # Ensure log directory exists (logs/ directory at the root)
+    log_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs')
+    if not os.path.exists(log_dir):
         os.makedirs(log_dir)
+
+    # Log file path within the "logs" directory
+    log_file = os.path.join(log_dir, log_file)
 
     # Create logger
     logger = logging.getLogger(name)
-    logger.setLevel(level)
+    logger.setLevel(getattr(logging, level, logging.INFO))  # Default to INFO if invalid level
 
     # Clear any existing handlers
     logger.handlers.clear()
@@ -56,6 +60,5 @@ def setup_logger(name=app_name, log_file=f"{log_name}.log", level=logging.INFO):
 
     return logger
 
-
-# logger instance
+# Create a logger instance
 configured_logger = setup_logger()

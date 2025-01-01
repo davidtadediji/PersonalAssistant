@@ -1,6 +1,7 @@
 import getpass
 import os
 from typing import Sequence
+
 from dotenv import load_dotenv
 from langchain import hub
 from langchain_core.language_models import BaseChatModel
@@ -12,8 +13,14 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableBranch
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
+
+from app.tools.current_location_tool import get_current_location_tool
+from app.tools.geocode_tool import get_geocode_location_tool
+from app.tools.image_url_interpreter_tool import get_image_url_interpreter_tool
+from app.tools.reverse_geocode_tool import get_reverse_geocode_tool
+from app.tools.tavily_extract_tool import get_tavily_extract_tool
+from app.tools.wolfram_tool import get_wolfram_tool
 from output_parser import LLMCompilerPlanParser
-from app.tools.functions import tavily_search, tavily_extract
 
 load_dotenv()
 
@@ -28,12 +35,13 @@ def _get_pass(var: str):
 
 _get_pass("OPENAI_API_KEY")
 
+
 # TODO: convert to planner agent; make planner use tool functions instead of BaseTool
 def create_planner(
-    llm: BaseChatModel, tools: Sequence[BaseTool], base_prompt: ChatPromptTemplate
+        llm: BaseChatModel, tools: Sequence[BaseTool], base_prompt: ChatPromptTemplate
 ):
     tool_descriptions = "\n".join(
-        f"{i+1}. {tool.description}\n"
+        f"{i + 1}. {tool.description}\n"
         for i, tool in enumerate(
             tools
         )  # +1 to offset the 0 starting index, we want it count normally from 1.
@@ -41,16 +49,16 @@ def create_planner(
     planner_prompt = base_prompt.partial(
         replan="",
         num_tools=len(tools)
-        + 1,  # Add one because we're adding the join() tool at the end.
+                  + 1,  # Add one because we're adding the join() tool at the end.
         tool_descriptions=tool_descriptions,
     )
     re_planner_prompt = base_prompt.partial(
         replan=' - You are given "Previous Plan" which is the plan that the previous agent created along with the execution results '
-        "(given as Observation) of each plan and a general thought (given as Thought) about the executed results."
-        'You MUST use these information to create the next plan under "Current Plan".\n'
-        ' - When starting the Current Plan, you should start with "Thought" that outlines the strategy for the next plan.\n'
-        " - In the Current Plan, you should NEVER repeat the actions that are already executed in the Previous Plan.\n"
-        " - You must continue the task index from the end of the previous one. Do not repeat task indices.",
+               "(given as Observation) of each plan and a general thought (given as Thought) about the executed results."
+               'You MUST use these information to create the next plan under "Current Plan".\n'
+               ' - When starting the Current Plan, you should start with "Thought" that outlines the strategy for the next plan.\n'
+               " - In the Current Plan, you should NEVER repeat the actions that are already executed in the Previous Plan.\n"
+               " - You must continue the task index from the end of the previous one. Do not repeat task indices.",
         num_tools=len(tools) + 1,
         tool_descriptions=tool_descriptions,
     )
@@ -72,25 +80,33 @@ def create_planner(
         return {"messages": state}
 
     return (
-        RunnableBranch(
-            (should_re_plan, wrap_and_get_last_index | re_planner_prompt),
-            wrap_messages | planner_prompt,
-        )
-        | llm
-        | LLMCompilerPlanParser(tools=tools)
+            RunnableBranch(
+                (should_re_plan, wrap_and_get_last_index | re_planner_prompt),
+                wrap_messages | planner_prompt,
+            )
+            | llm
+            | LLMCompilerPlanParser(tools=tools)
     )
+
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-from math_tools import get_math_tool
+from app.tools.math_tools import get_math_tool
 
 _get_pass("TAVILY_API_KEY")
 
 calculate = get_math_tool(ChatOpenAI(model=os.getenv("EXECUTION_MODEL")))
+science_and_computation = get_wolfram_tool()
+geocode_location = get_geocode_location_tool()
+reverse_geocode = get_reverse_geocode_tool()
+current_location = get_current_location_tool()
+extract_raw_content_from_url = get_tavily_extract_tool()
+image_url_interpreter = get_image_url_interpreter_tool()
 search = TavilySearchResults(
     max_results=1,
     description='tavily_search_results_json(query="the search query") - a search engine.',
 )
 
-
-planner = create_planner(ChatOpenAI(model=os.getenv("PLANNING_MODEL")),  [search, calculate], prompt)
+planner = create_planner(ChatOpenAI(model=os.getenv("PLANNING_MODEL")),
+                         [search, science_and_computation, geocode_location, reverse_geocode, current_location,
+                          extract_raw_content_from_url, image_url_interpreter], prompt)

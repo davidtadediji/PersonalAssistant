@@ -1,9 +1,13 @@
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
+import os
 from typing import Union, List
+
+from dotenv import load_dotenv
 from langchain import hub
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from app.llm_compiler.task_fetching_unit import plan_and_schedule
+
+load_dotenv()
 
 
 class FinalResponse(BaseModel):
@@ -30,7 +34,7 @@ class JoinOutputs(BaseModel):
 joiner_prompt = hub.pull("wfh/llm-compiler-joiner").partial(
     examples=""
 )  # You can optionally add examples
-llm = ChatOpenAI(model="gpt-4-turbo-preview")
+llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
 
 runnable = joiner_prompt | llm.with_structured_output(JoinOutputs)
 
@@ -40,11 +44,11 @@ def _parse_joiner_output(decision: JoinOutputs) -> List[BaseMessage]:
     if isinstance(decision.action, RePlan):
         return {
             "messages": response
-            + [
-                SystemMessage(
-                    content=f"Context from last attempt: {decision.action.feedback}"
-                )
-            ]
+                        + [
+                            SystemMessage(
+                                content=f"Context from last attempt: {decision.action.feedback}"
+                            )
+                        ]
         }
     else:
         return {"messages": response + [AIMessage(content=decision.action.response)]}
@@ -61,7 +65,6 @@ def select_recent_messages(state) -> dict:
 
 
 joiner = select_recent_messages | runnable | _parse_joiner_output
-
 
 # Test
 example_question = "What's the temperature in SF raised to the 3rd power?"
