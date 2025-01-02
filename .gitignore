@@ -16,3 +16,4 @@ app/checkpoints
 PROJECT_PATH.md
 
 *.log
+*/resources/

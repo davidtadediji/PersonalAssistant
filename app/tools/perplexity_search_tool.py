@@ -18,9 +18,7 @@ class PerplexitySearchQuery(BaseModel):
     temperature: float = Field(
         default=0.2, description="Sampling temperature for response generation."
     )
-    top_p: float = Field(
-        default=0.9, description="Nucleus sampling parameter."
-    )
+    top_p: float = Field(default=0.9, description="Nucleus sampling parameter.")
     search_domain_filter: Optional[List[str]] = Field(
         None, description="Domains to restrict search results to."
     )
@@ -33,9 +31,7 @@ class PerplexitySearchQuery(BaseModel):
     search_recency_filter: str = Field(
         default="month", description="Recency filter for the search (e.g., 'month')."
     )
-    top_k: int = Field(
-        default=0, description="Number of top results to return."
-    )
+    top_k: int = Field(default=0, description="Number of top results to return.")
     presence_penalty: float = Field(
         default=0.0, description="Presence penalty for token generation."
     )
@@ -45,18 +41,18 @@ class PerplexitySearchQuery(BaseModel):
 
 
 def perplexity_search(
-        query,
-        model="llama-3.1-sonar-small-128k-online",
-        max_tokens=None,
-        temperature=0.2,
-        top_p=0.9,
-        search_domain_filter=None,
-        return_images=False,
-        return_related_questions=False,
-        search_recency_filter="month",
-        top_k=0,
-        presence_penalty=0,
-        frequency_penalty=1,
+    query,
+    model="llama-3.1-sonar-small-128k-online",
+    max_tokens=None,
+    temperature=0.2,
+    top_p=0.9,
+    search_domain_filter=None,
+    return_images=False,
+    return_related_questions=False,
+    search_recency_filter="month",
+    top_k=0,
+    presence_penalty=0,
+    frequency_penalty=1,
 ):
     """
     Queries the Perplexity API with the provided parameters.

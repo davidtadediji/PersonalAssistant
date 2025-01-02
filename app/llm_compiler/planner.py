@@ -17,9 +17,17 @@ from langchain_openai import ChatOpenAI
 from app.tools.current_location_tool import get_current_location_tool
 from app.tools.geocode_tool import get_geocode_location_tool
 from app.tools.image_url_interpreter_tool import get_image_url_interpreter_tool
+from app.tools.personal_information_tool import (
+    get_store_user_personal_info_tool,
+    retrieve_user_personal_info,
+    get_retrieve_user_personal_info_tool,
+)
 from app.tools.reverse_geocode_tool import get_reverse_geocode_tool
 from app.tools.tavily_extract_tool import get_tavily_extract_tool
-from app.tools.weather_forecast_tool import get_weather_forecast_tool,  get_weather_information_tool
+from app.tools.weather_forecast_tool import (
+    get_weather_forecast_tool,
+    get_weather_information_tool,
+)
 from app.tools.wolfram_tool import get_wolfram_tool
 from output_parser import LLMCompilerPlanParser
 
@@ -39,7 +47,7 @@ _get_pass("OPENAI_API_KEY")
 
 # TODO: convert to planner agent; make planner use tool functions instead of BaseTool
 def create_planner(
-        llm: BaseChatModel, tools: Sequence[BaseTool], base_prompt: ChatPromptTemplate
+    llm: BaseChatModel, tools: Sequence[BaseTool], base_prompt: ChatPromptTemplate
 ):
     tool_descriptions = "\n".join(
         f"{i + 1}. {tool.description}\n"
@@ -50,16 +58,16 @@ def create_planner(
     planner_prompt = base_prompt.partial(
         replan="",
         num_tools=len(tools)
-                  + 1,  # Add one because we're adding the join() tool at the end.
+        + 1,  # Add one because we're adding the join() tool at the end.
         tool_descriptions=tool_descriptions,
     )
     re_planner_prompt = base_prompt.partial(
         replan=' - You are given "Previous Plan" which is the plan that the previous agent created along with the execution results '
-               "(given as Observation) of each plan and a general thought (given as Thought) about the executed results."
-               'You MUST use these information to create the next plan under "Current Plan".\n'
-               ' - When starting the Current Plan, you should start with "Thought" that outlines the strategy for the next plan.\n'
-               " - In the Current Plan, you should NEVER repeat the actions that are already executed in the Previous Plan.\n"
-               " - You must continue the task index from the end of the previous one. Do not repeat task indices.",
+        "(given as Observation) of each plan and a general thought (given as Thought) about the executed results."
+        'You MUST use these information to create the next plan under "Current Plan".\n'
+        ' - When starting the Current Plan, you should start with "Thought" that outlines the strategy for the next plan.\n'
+        " - In the Current Plan, you should NEVER repeat the actions that are already executed in the Previous Plan.\n"
+        " - You must continue the task index from the end of the previous one. Do not repeat task indices.",
         num_tools=len(tools) + 1,
         tool_descriptions=tool_descriptions,
     )
@@ -81,12 +89,12 @@ def create_planner(
         return {"messages": state}
 
     return (
-            RunnableBranch(
-                (should_re_plan, wrap_and_get_last_index | re_planner_prompt),
-                wrap_messages | planner_prompt,
-            )
-            | llm
-            | LLMCompilerPlanParser(tools=tools)
+        RunnableBranch(
+            (should_re_plan, wrap_and_get_last_index | re_planner_prompt),
+            wrap_messages | planner_prompt,
+        )
+        | llm
+        | LLMCompilerPlanParser(tools=tools)
     )
 
 
@@ -104,6 +112,9 @@ current_location = get_current_location_tool()
 extract_raw_content_from_url = get_tavily_extract_tool()
 weather_information = get_weather_forecast_tool()
 image_url_interpreter = get_image_url_interpreter_tool()
+store_user_personal_info = get_store_user_personal_info_tool()
+retrieve_user_personal_info = get_retrieve_user_personal_info_tool()
+
 search = TavilySearchResults(
     max_results=1,
     description='tavily_search_results_json(query="the search query") - a search engine. Where appropriate, it could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails.',
@@ -120,6 +131,8 @@ planner = create_planner(
         current_location,
         extract_raw_content_from_url,
         image_url_interpreter,
+        store_user_personal_info,
+        retrieve_user_personal_info,
     ],
     prompt,
 )

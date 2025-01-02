@@ -42,12 +42,12 @@ class OpenWeather:
             raise ValueError("Longitude must be between -180 and 180")
 
     def get_current_and_forecast(
-            self,
-            lat: float,
-            lon: float,
-            exclude: Optional[List[str]] = None,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        exclude: Optional[List[str]] = None,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours,
@@ -69,12 +69,12 @@ class OpenWeather:
         return response.json()
 
     def get_historical(
-            self,
-            lat: float,
-            lon: float,
-            timestamp: int,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        timestamp: int,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get historical weather data for a specific timestamp.
@@ -95,13 +95,13 @@ class OpenWeather:
         return response.json()
 
     def get_daily_aggregate(
-            self,
-            lat: float,
-            lon: float,
-            date: str,
-            timezone: Optional[str] = None,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        date: str,
+        timezone: Optional[str] = None,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get daily aggregated weather data for a specific date.
@@ -124,11 +124,11 @@ class OpenWeather:
         return response.json()
 
     def get_weather_overview(
-            self,
-            lat: float,
-            lon: float,
-            date: Optional[str] = None,
-            units: str = "standard",
+        self,
+        lat: float,
+        lon: float,
+        date: Optional[str] = None,
+        units: str = "standard",
     ) -> Dict[str, Any]:
         """
         Get a weather overview with a human-readable summary for today or tomorrow's forecast.
@@ -157,6 +157,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+
 class WeatherForecastQuery(BaseModel):
     operation: str = Field(
         ...,
@@ -165,8 +166,15 @@ class WeatherForecastQuery(BaseModel):
             "Options: 'current_forecast', 'historical', 'daily_aggregate', or 'overview'."
         ),
     )
-    lat: float = Field(..., ge=-90, le=90, description="Latitude of the location (range: -90 to 90).")
-    lon: float = Field(..., ge=-180, le=180, description="Longitude of the location (range: -180 to 180).")
+    lat: float = Field(
+        ..., ge=-90, le=90, description="Latitude of the location (range: -90 to 90)."
+    )
+    lon: float = Field(
+        ...,
+        ge=-180,
+        le=180,
+        description="Longitude of the location (range: -180 to 180).",
+    )
     units: Optional[str] = Field(
         "standard",
         description=(
@@ -174,12 +182,17 @@ class WeatherForecastQuery(BaseModel):
             "'standard' (default), 'metric' (Celsius, m/s), 'imperial' (Fahrenheit, mph)."
         ),
     )
-    lang: Optional[str] = Field("en", description="Language code for descriptions (e.g., 'en', 'es', 'fr'). Default is 'en'.")
+    lang: Optional[str] = Field(
+        "en",
+        description="Language code for descriptions (e.g., 'en', 'es', 'fr'). Default is 'en'.",
+    )
     exclude: Optional[List[str]] = Field(
-        None, description="List of data blocks to exclude for 'current_forecast' (e.g., ['minutely', 'alerts'])."
+        None,
+        description="List of data blocks to exclude for 'current_forecast' (e.g., ['minutely', 'alerts']).",
     )
     timestamp: Optional[int] = Field(
-        None, description="Unix timestamp for historical data. Required for 'historical' operation."
+        None,
+        description="Unix timestamp for historical data. Required for 'historical' operation.",
     )
     date: Optional[str] = Field(
         None,
@@ -194,10 +207,16 @@ class WeatherForecastQuery(BaseModel):
 
     @validator("operation")
     def validate_operation(cls, v):
-        valid_operations = ["current_forecast", "historical", "daily_aggregate", "overview"]
+        valid_operations = [
+            "current_forecast",
+            "historical",
+            "daily_aggregate",
+            "overview",
+        ]
         if v not in valid_operations:
             raise ValueError(f"Invalid operation. Must be one of: {valid_operations}")
         return v
+
 
 def weather_forecast(
     operation: str,
@@ -256,6 +275,7 @@ def weather_forecast(
     else:
         raise ValueError(f"Unknown operation: {operation}")
 
+
 def get_weather_forecast_tool() -> StructuredTool:
     """
     Returns a StructuredTool for the weather_forecast function.
@@ -289,6 +309,7 @@ def get_weather_forecast_tool() -> StructuredTool:
         ),
         input_schema=WeatherForecastQuery,
     )
+
 
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel

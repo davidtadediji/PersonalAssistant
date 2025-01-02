@@ -63,13 +63,7 @@ img = PILImage.open("../../resources/llm_compiler.png")
 img.show()
 
 for step in chain.stream(
-    {
-        "messages": [
-            HumanMessage(
-                content="What are the 10 densest metals"
-            )
-        ]
-    }
+    {"messages": [HumanMessage(content="What is my name and age?")]}
 ):
     print(step)
     print("---")

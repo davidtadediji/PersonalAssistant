@@ -22,7 +22,7 @@ class GeocodeLocationQuery(BaseModel):
 
 
 def geocode_location(
-        location_name: Optional[str] = None, zip_code: Optional[str] = None, limit: int = 5
+    location_name: Optional[str] = None, zip_code: Optional[str] = None, limit: int = 5
 ) -> dict:
     api_key = os.getenv("OPENWEATHER_API_KEY")
     api_url = os.getenv("OPENWEATHER_GEOCODE_URL")

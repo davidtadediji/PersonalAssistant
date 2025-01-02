@@ -16,13 +16,13 @@ class SQLDatabaseQuery(BaseModel):
 
 
 def sql_database(
-        operation,
-        db_name,
-        table_name=None,
-        data=None,
-        columns=None,
-        condition=None,
-        query=None,
+    operation,
+    db_name,
+    table_name=None,
+    data=None,
+    columns=None,
+    condition=None,
+    query=None,
 ):
     """
     Perform CRUD operations and custom queries on the database.
@@ -91,6 +91,7 @@ def sql_database(
     finally:
         if connection:
             connection.close()
+
 
 def sql_database_tool() -> StructuredTool:
     return StructuredTool.from_function(

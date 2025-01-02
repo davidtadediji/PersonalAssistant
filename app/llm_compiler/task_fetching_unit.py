@@ -91,6 +91,7 @@ def _resolve_arg(arg: Union[str, Any], observations: Dict[int, Any]):
         # For non-string arguments, return them as-is
         return arg
 
+
 @as_runnable
 def schedule_task(task_inputs, config):
     task: Task = task_inputs["task"]
