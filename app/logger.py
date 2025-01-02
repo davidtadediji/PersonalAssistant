@@ -12,6 +12,7 @@ app_name = os.getenv("APP_NAME", "default_app_name")
 log_name = os.getenv("LOG_NAME", "default_log_name")
 log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
+
 def setup_logger(name=app_name, log_file=f"{log_name}.log", level=log_level):
     """
     Create a comprehensive logger with multiple handlers.
@@ -22,7 +23,7 @@ def setup_logger(name=app_name, log_file=f"{log_name}.log", level=log_level):
     - Structured logging
     """
     # Ensure log directory exists (logs/ directory at the root)
-    log_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs')
+    log_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "logs")
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
@@ -31,7 +32,9 @@ def setup_logger(name=app_name, log_file=f"{log_name}.log", level=log_level):
 
     # Create logger
     logger = logging.getLogger(name)
-    logger.setLevel(getattr(logging, level, logging.INFO))  # Default to INFO if invalid level
+    logger.setLevel(
+        getattr(logging, level, logging.INFO)
+    )  # Default to INFO if invalid level
 
     # Clear any existing handlers
     logger.handlers.clear()
@@ -59,6 +62,7 @@ def setup_logger(name=app_name, log_file=f"{log_name}.log", level=log_level):
     logger.addHandler(file_handler)
 
     return logger
+
 
 # Create a logger instance
 configured_logger = setup_logger()

@@ -46,7 +46,7 @@ project_root = (
     Path(__file__).resolve().parent
 )  # This is the directory where server.py is located
 resources_dir = (
-        project_root / "../../resources"
+    project_root / "../../resources"
 )  # Use the / operator to join paths (pathlib feature)
 
 # Ensure the resources directory exists
@@ -63,7 +63,13 @@ img = PILImage.open("../../resources/llm_compiler.png")
 img.show()
 
 for step in chain.stream(
-        {"messages": [HumanMessage(content="what is the difference km between my exact current location  and  New york")]}
+    {
+        "messages": [
+            HumanMessage(
+                content="What are the 10 densest metals"
+            )
+        ]
+    }
 ):
     print(step)
     print("---")

@@ -1,15 +1,17 @@
-from typing import List
-from langchain_core.tools import StructuredTool
 import os
-import requests
 from datetime import datetime
 from typing import List, Dict
+
+import requests
+from dotenv import load_dotenv
+from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+
+load_dotenv()
 
 
 class TavilyExtractQuery(BaseModel):
     urls: List[str]  # A list of URLs to extract content from
-
 
 
 def tavily_extract(urls: List[str]) -> Dict:
@@ -29,9 +31,7 @@ def tavily_extract(urls: List[str]) -> Dict:
         payload = {"urls": urls}
 
         # Synchronous request using requests
-        response = requests.post(
-            f"{base_url}/extract", headers=headers, json=payload
-        )
+        response = requests.post(f"{base_url}/extract", headers=headers, json=payload)
 
         if response.status_code == 200:
             results = response.json()
@@ -59,7 +59,9 @@ def tavily_extract(urls: List[str]) -> Dict:
             return formatted_results
         else:
             error_msg = response.text
-            raise Exception(f"Extraction failed -> {error_msg}") from Exception(error_msg)
+            raise Exception(f"Extraction failed -> {error_msg}") from Exception(
+                error_msg
+            )
 
     except Exception as e:
         raise Exception(f"Tavily extract failed -> {e}") from e

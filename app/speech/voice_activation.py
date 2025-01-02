@@ -2,6 +2,7 @@ import speech_recognition as sr
 import asyncio
 from conversation import ConversationManager
 
+
 async def listen_for_phrase():
     recognizer = sr.Recognizer()
     manager = ConversationManager()
@@ -26,6 +27,7 @@ async def listen_for_phrase():
             except sr.RequestError as e:
                 print(f"Could not request results: {e}")
                 break
+
 
 if __name__ == "__main__":
     asyncio.run(listen_for_phrase())

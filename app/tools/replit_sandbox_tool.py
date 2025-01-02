@@ -1,3 +1,12 @@
+import time
+from typing import Dict, Optional, Any
+
+from dotenv import load_dotenv
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel
+
+load_dotenv()
+
 import os
 
 import requests
@@ -90,3 +99,62 @@ class ReplitSandbox:
         """
         if requirements:
             self.upload_file(repl_id, "../requirements.txt", requirements)
+
+
+class ReplitSandboxQuery(BaseModel):
+    api_key: str
+    repl_title: str
+    program_structure: Dict[str, Any]
+    requirements: Optional[Dict[str, Any]] = None
+
+
+def replit_sandbox(api_key, repl_title, program_structure, requirements=None):
+    """
+    Interact with a code execution sandbox. Create a Replit sandbox, upload an entire program (multi-file),
+    execute it, and retrieve results.
+    """
+    try:
+        replit_api = ReplitSandbox(api_key)
+        repl_data = replit_api.create_repl(repl_title)
+        if not repl_data:
+            raise Exception("Failed to create Repl.")
+
+        repl_id = repl_data["id"]
+
+        program_files = program_structure.get("files", {})
+        for file_path, content in program_files.items():
+            if not replit_api.upload_file(repl_id, file_path, content):
+                raise Exception(f"Failed to upload file {file_path}.")
+
+        if requirements:
+            replit_api.upload_requirements(repl_id, requirements)
+
+        directories = program_structure.get("directories", {})
+        for dir_name, local_directory in directories.items():
+            replit_api.upload_directory(repl_id, dir_name, local_directory)
+
+        execution_result = replit_api.execute_code(repl_id)
+        if not execution_result:
+            raise Exception("Failed to execute code in Repl.")
+
+        time.sleep(2)
+
+        status = replit_api.get_repl_status(repl_id)
+        if status and status.get("status") == "running":
+            return "The Repl is still running. Please try again later."
+
+        return execution_result.get("output", "No output returned.")
+    except Exception as e:
+        raise Exception(f"Replit sandbox creation failed -> {e}") from e
+
+
+def replit_sandbox_tool() -> StructuredTool:
+    return StructuredTool.from_function(
+        name="replit_sandbox",
+        func=replit_sandbox,
+        description=(
+            "Interact with a code execution sandbox. Create a Replit sandbox, upload an entire program (multi-file), "
+            "execute it, and retrieve results."
+        ),
+        input_schema=ReplitSandboxQuery,
+    )

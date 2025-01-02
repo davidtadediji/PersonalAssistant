@@ -51,8 +51,8 @@ def _execute_task(task, observations, config):
         return tool_to_use.invoke(resolved_args, config)
     except Exception as e:
         return (
-                f"ERROR(Failed to call {tool_to_use.name} with args {args}."
-                + f" Args resolved to {resolved_args}. Error: {repr(e)})"
+            f"ERROR(Failed to call {tool_to_use.name} with args {args}."
+            + f" Args resolved to {resolved_args}. Error: {repr(e)})"
         )
 
 
@@ -62,20 +62,34 @@ def _resolve_arg(arg: Union[str, Any], observations: Dict[int, Any]):
 
     def replace_match(match):
         # If the string is ${123}, match.group(0) is ${123}, and match.group(1) is 123.
-
-        # Return the match group, in this case the index, from the string. This is the index
-        # number we get back.
         idx = int(match.group(1))
-        return str(observations.get(idx, match.group(0)))
+        return observations.get(idx, match.group(0))
 
     # For dependencies on other tasks
     if isinstance(arg, str):
-        return re.sub(id_pattern, replace_match, arg)
+        # Check if the argument is a reference to a previous observation (e.g., "$1")
+        if re.match(id_pattern, arg):
+            resolved_value = re.sub(id_pattern, replace_match, arg)
+            # Try to convert the resolved value to the appropriate type
+            try:
+                # Check if the resolved value is a number
+                if "." in resolved_value:
+                    return float(resolved_value)  # Convert to float
+                else:
+                    return int(resolved_value)  # Convert to int
+            except (ValueError, TypeError):
+                # If conversion fails, return the resolved value as-is
+                return resolved_value
+        else:
+            # If it's not a reference, return the argument as-is
+            return arg
     elif isinstance(arg, list):
         return [_resolve_arg(a, observations) for a in arg]
+    elif isinstance(arg, dict):
+        return {key: _resolve_arg(val, observations) for key, val in arg.items()}
     else:
-        return str(arg)
-
+        # For non-string arguments, return them as-is
+        return arg
 
 @as_runnable
 def schedule_task(task_inputs, config):
@@ -91,7 +105,7 @@ def schedule_task(task_inputs, config):
 
 
 def schedule_pending_task(
-        task: Task, observations: Dict[int, Any], retry_after: float = 0.2
+    task: Task, observations: Dict[int, Any], retry_after: float = 0.2
 ):
     while True:
         deps = task["dependencies"]
@@ -132,8 +146,9 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
             )
             args_for_tasks[task["idx"]] = task["args"]
             if (
-                    # Depends on other tasks
-                    deps and (any([dep not in observations for dep in deps]))
+                # Depends on other tasks
+                deps
+                and (any([dep not in observations for dep in deps]))
             ):
                 futures.append(
                     executor.submit(

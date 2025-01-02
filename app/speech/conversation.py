@@ -29,7 +29,7 @@ from deepgram import (
     LiveTranscriptionEvents,
     LiveOptions,
     Microphone,
-    SpeakOptions
+    SpeakOptions,
 )
 
 load_dotenv()
@@ -37,21 +37,27 @@ load_dotenv()
 
 class LanguageModelProcessor:
     def __init__(self):
-        self.llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768", groq_api_key=os.getenv("GROQ_API_KEY"))
-        self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+        self.llm = ChatGroq(
+            temperature=0,
+            model_name="mixtral-8x7b-32768",
+            groq_api_key=os.getenv("GROQ_API_KEY"),
+        )
+        self.memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
 
         system_prompt = "You are a conversational assistant named Eliza. Use short, conversational responses as if you're having a live conversation. Your response should be under 20 words. Do not respond with any code, only conversation"
 
-        self.prompt = ChatPromptTemplate.from_messages([
-            SystemMessagePromptTemplate.from_template(system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            HumanMessagePromptTemplate.from_template("{text}")
-        ])
+        self.prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessagePromptTemplate.from_template(system_prompt),
+                MessagesPlaceholder(variable_name="chat_history"),
+                HumanMessagePromptTemplate.from_template("{text}"),
+            ]
+        )
 
         self.conversation = LLMChain(
-            llm=self.llm,
-            prompt=self.prompt,
-            memory=self.memory
+            llm=self.llm, prompt=self.prompt, memory=self.memory
         )
 
     def process(self, text):
@@ -60,11 +66,11 @@ class LanguageModelProcessor:
         response = self.conversation.invoke({"text": text})
         end_time = time.time()
 
-        self.memory.chat_memory.add_ai_message(response['text'])
+        self.memory.chat_memory.add_ai_message(response["text"])
 
         elapsed_time = int((end_time - start_time) * 1000)
         print(f"LLM ({elapsed_time}ms): {response['text']}")
-        return response['text']
+        return response["text"]
 
 
 def text2speech(text):
@@ -74,9 +80,7 @@ def text2speech(text):
         deepgram = DeepgramClient(api_key=os.getenv("DEEPGRAM_API_KEY"))
 
         options = SpeakOptions(
-            model="aura-asteria-en",
-            encoding="linear16",
-            container="wav"
+            model="aura-asteria-en", encoding="linear16", container="wav"
         )
 
         response = deepgram.speak.v("1").save(filename, SPEAK_OPTIONS, options)
@@ -97,7 +101,7 @@ class TranscriptCollector:
         self.transcript_parts.append(part)
 
     def get_full_transcript(self):
-        return ' '.join(self.transcript_parts)
+        return " ".join(self.transcript_parts)
 
 
 transcript_collector = TranscriptCollector()
@@ -168,6 +172,7 @@ async def get_transcript(callback):
         print(f"Could not open socket: {e}")
         raise
 
+
 @dataclass
 class AudioPlayback:
     play_obj: Optional[sa.PlayObject] = None
@@ -198,7 +203,7 @@ class ConversationManager:
                 audio_data,
                 num_channels=audio.channels,
                 bytes_per_sample=audio.sample_width,
-                sample_rate=audio.frame_rate
+                sample_rate=audio.frame_rate,
             )
             self.audio_playback.is_playing = True
         except Exception as e:
@@ -210,7 +215,10 @@ class ConversationManager:
 
     async def start_listening(self):
         self.is_listening = True
-        if self.current_transcription_task is None or self.current_transcription_task.done():
+        if (
+            self.current_transcription_task is None
+            or self.current_transcription_task.done()
+        ):
             self.current_transcription_task = asyncio.create_task(
                 get_transcript(self.handle_transcription)
             )

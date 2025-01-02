@@ -1,3 +1,11 @@
+from typing import List
+
+from dotenv import load_dotenv
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel
+
+load_dotenv()
+
 import os
 import time
 
@@ -160,3 +168,36 @@ class TextRact:
             except Exception as e:
                 configured_logger.error(f"Error processing file {file_name} -> {e}")
         return extracted_text
+
+
+class TextractOCRQuery(BaseModel):
+    file_names: List[str]
+
+
+def textract_ocr(file_names: list) -> str:
+    """
+    Extract text from files in s3 object storage using AWS Textract.
+
+    Args:
+        file_names (list): List of S3 file names to extract text from.
+
+    Returns:
+        str: Concatenated extracted text from all files.
+    """
+    try:
+        textract_client = TextRact()
+        return textract_client.extract_text(file_names)
+    except Exception as e:
+        raise Exception(f"Text extraction failed -> {e}") from e
+
+
+def textract_ocr_tool() -> StructuredTool:
+    return StructuredTool.from_function(
+        name="textract_ocr",
+        func=textract_ocr,
+        description=(
+            "Extract text from files in s3 object storage using AWS Textract.\n"
+            " - file_names: List of S3 file names to extract text from."
+        ),
+        input_schema=TextractOCRQuery,
+    )

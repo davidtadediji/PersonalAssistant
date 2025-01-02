@@ -1,17 +1,22 @@
-from typing import Optional
 import os
+
 import requests
-from pydantic import BaseModel, Field
-from langchain_core.tools import StructuredTool
 from dotenv import load_dotenv
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 # Load environment variables
 load_dotenv()
 
+
 class WolframAlphaQuery(BaseModel):
     """The input for Wolfram Alpha query."""
+
     query: str = Field(..., description="The query to send to Wolfram Alpha.")
-    max_chars: int = Field(6800, description="The maximum number of characters in the response.")
+    max_chars: int = Field(
+        6800, description="The maximum number of characters in the response."
+    )
+
 
 def wolfram_alpha_computing(query: str, max_chars: int = 800) -> str:
     """

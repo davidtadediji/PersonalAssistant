@@ -1,13 +1,19 @@
-from openai import OpenAI
+import os
 from typing import Dict
+
+from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
+from openai import OpenAI
 from pydantic import BaseModel, Field
 
+load_dotenv()
 # Initialize the OpenAI client
 client = OpenAI()
 
+
 class ImageUrlInterpreterInput(BaseModel):
     url: str = Field(..., description="The URL of the image to be interpreted.")
+
 
 def image_url_interpreter(url: str) -> Dict:
     """Interpret the content of an image URL using OpenAI API.
@@ -21,7 +27,7 @@ def image_url_interpreter(url: str) -> Dict:
     try:
         # Send the image URL to the OpenAI API for interpretation
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=os.getenv("EXECUTION_MODEL"),
             messages=[
                 {
                     "role": "user",
@@ -49,6 +55,7 @@ def image_url_interpreter(url: str) -> Dict:
 
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
+
 
 def get_image_url_interpreter_tool():
     return StructuredTool.from_function(

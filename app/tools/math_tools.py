@@ -3,7 +3,6 @@ import re
 from typing import List, Optional
 
 import numexpr
-from langchain.chains.openai_functions import create_structured_output_runnable
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
@@ -33,7 +32,6 @@ _MATH_DESCRIPTION = (
     " - When you ask a question about `context`, specify the units. "
     'For instance, "what is xx in height?" or "what is xx in millions?" instead of "what is xx?"\n'
 )
-
 
 _SYSTEM_PROMPT = """Translate a math problem into a expression that can be executed using Python's numexpr library. Use the output of running this code to answer the question.
 
@@ -117,9 +115,9 @@ def get_math_tool(llm: ChatOpenAI):
     extractor = prompt | llm.with_structured_output(ExecuteCode)
 
     def calculate_expression(
-        problem: str,
-        context: Optional[List[str]] = None,
-        config: Optional[RunnableConfig] = None,
+            problem: str,
+            context: Optional[List[str]] = None,
+            config: Optional[RunnableConfig] = None,
     ):
         chain_input = {"problem": problem}
         if context:

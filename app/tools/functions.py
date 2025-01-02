@@ -2,195 +2,32 @@ import json
 import os
 import sqlite3
 import time
-from datetime import datetime
 from typing import List, Optional, Any, Dict
 
-import aiohttp
 import cv2
-import geocoder
 import requests
-from dotenv import load_dotenv
-from langchain_core.tools import tool
 from app.tools.mongo_db import MongoDB
-from app.tools.openweather import OpenWeather
 from app.tools.replit_sandbox import ReplitSandbox
 from app.tools.s3_storage import S3
 from app.tools.textract_ocr import TextRact
+from dotenv import load_dotenv
+from langchain_core.tools import tool
+
+from app.tools.weather_forecast_tool import OpenWeather
 
 # Load environment variables from .env file
 load_dotenv()
 
 
 @tool
-def wolfram_alpha_computing(
-    input_query: Optional[str] = None, max_chars: int = 6800
-) -> str:
-    """
-    Query Wolfram Alpha LLM API with better handling of partial inputs.
-    If the input_query is missing or incomplete, provide guidance for the user.
-
-    Args:
-        input_query (Optional[str]): The query for Wolfram Alpha. If not provided, a prompt will guide the user.
-        max_chars (int): The maximum number of characters in the response (default is 6800).
-
-    Returns:
-        str: The result from the Wolfram Alpha LLM API or an error message with guidance.
-    """
-    try:
-        # Retrieve the app_id from the environment variable
-        app_id = os.getenv(
-            "WOLFRAM_ALPHA_APP_ID", "DEMO"
-        )  # Default to "DEMO" if the environment variable is not set
-
-        if not input_query:
-            return "Error: No query provided. Please provide a valid query to proceed."
-
-        base_url = "https://www.wolframalpha.com/api/v1/llm-api"
-        params = {"input": input_query, "appid": app_id, "maxchars": max_chars}
-
-        response = requests.get(base_url, params=params)
-        response.raise_for_status()  # Raise HTTPError for bad responses
-
-        if response.status_code == 200:
-            result = response.json()
-            query_result = result.get("queryresult", {})
-            if query_result:
-                pods = query_result.get("pods", [])
-                if pods:
-                    return f"Query result:\n{pods}"
-                else:
-                    return "No relevant data found for the query."
-            else:
-                return "Error: No valid query result returned by Wolfram Alpha."
-        else:
-            raise Exception(f"Error: {response.status_code} - {response.text}")
-    except requests.exceptions.RequestException as e:
-        raise Exception(f"Error occurred during Wolfram Alpha API call -> {e}") from e
-
-
-@tool
-def geocode_location(api_key, location_name=None, zip_code=None, limit=5):
-    """
-    Query the OpenWeather Geocoding API to get geographical coordinates by either city name or zip code.
-    Supports direct geocoding (from location name or zip code). The API allows searching for multiple
-    locations with the same name and can limit the number of results returned.
-
-    Args:
-        api_key (str): Your unique OpenWeather API key (can be found under the "API key" tab in your account page).
-        location_name (Optional[str]): The name of the location (city name, state code, country code) for direct geocoding.
-                                       The format should be "city name, state code (only for US), country code" (e.g., "London,GB").
-        zip_code (Optional[str]): The zip/postal code and country code for direct geocoding (e.g., "90210,US").
-                                  Either this or `location_name` should be provided.
-        limit (Optional[int]): The number of locations to return in the response (up to 5 results can be returned, default is 5).
-
-    Returns:
-        dict: The result of the geocoding query, which may include:
-            - A list of matching locations with names, coordinates, and other relevant details for city name geocoding.
-            - An error message if no results are found or if there is an issue with the query.
-            Example:
-                [
-                    {
-                        "name": "London",
-                        "lat": 51.5073219,
-                        "lon": -0.1276474,
-                        "country": "GB",
-                        "state": "England"
-                    }
-                ]
-    """
-    # Define base URL for the API
-    if location_name:
-        url = f"http://api.openweathermap.org/geo/1.0/direct?q={location_name}&limit={limit}&appid={api_key}"
-    elif zip_code:
-        url = (
-            f"http://api.openweathermap.org/geo/1.0/zip?zip={zip_code}&appid={api_key}"
-        )
-    else:
-        raise ValueError(
-            "You must provide either a location name or zip code for geocoding."
-        )
-
-    # Make the request to the API
-    response = requests.get(url)
-
-    # Check if the request was successful
-    if response.status_code == 200:
-        data = response.json()
-
-        if not data:
-            return {"error": "No matching locations found."}
-
-        return data
-    else:
-        return {"error": f"Request failed with status code {response.status_code}."}
-
-
-@tool
-def reverse_geocode(api_key, lat, lon, limit=5):
-    """
-    Perform reverse geocoding to get location names from geographical coordinates (latitude, longitude).
-    The API allows multiple results if locations share similar coordinates.
-
-    Args:
-        api_key (str): Your unique OpenWeather API key (can be found under the "API key" tab in your account page).
-        lat (float): The latitude coordinate of the location.
-        lon (float): The longitude coordinate of the location.
-        limit (int, optional): The number of location names to return in the response (default is 5, maximum is 5).
-
-    Returns:
-        dict: The result of the reverse geocoding query, which may include:
-            - A list of matching locations with names, coordinates, and other relevant details.
-            - An error message if no results are found or if there is an issue with the query.
-            Example:
-                [
-                    {
-                        "name": "City of London",
-                        "lat": 51.5128,
-                        "lon": -0.0918,
-                        "country": "GB"
-                    }
-                ]
-    """
-    # Define the reverse geocoding URL
-    url = f"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit={limit}&appid={api_key}"
-
-    # Make the request to the API
-    response = requests.get(url)
-
-    # Check if the request was successful
-    if response.status_code == 200:
-        data = response.json()
-
-        if not data:
-            return {"error": "No matching locations found."}
-
-        return data
-    else:
-        return {"error": f"Request failed with status code {response.status_code}."}
-
-
-@tool
-def get_current_location():
-    """
-    This function returns the current location based on the IP address.
-
-    Returns:
-        dict: A dictionary containing location details like city, country, latitude, longitude, etc.
-    """
-    g = geocoder.ip("me")  # Uses your IP address to find your location
-    current_location = g.json
-    return current_location
-
-
-@tool
 def sql_database(
-    operation,
-    db_name,
-    table_name=None,
-    data=None,
-    columns=None,
-    condition=None,
-    query=None,
+        operation,
+        db_name,
+        table_name=None,
+        data=None,
+        columns=None,
+        condition=None,
+        query=None,
 ):
     """
     Perform CRUD operations and custom queries on the database.
@@ -263,13 +100,13 @@ def sql_database(
 
 @tool
 def mongo_database(
-    operation: str,
-    db_name: str,
-    collection_name: Optional[str] = None,
-    data: Optional[dict] = None,
-    filter_condition: Optional[dict] = None,
-    update_data: Optional[dict] = None,
-    query: Optional[dict] = None,
+        operation: str,
+        db_name: str,
+        collection_name: Optional[str] = None,
+        data: Optional[dict] = None,
+        filter_condition: Optional[dict] = None,
+        update_data: Optional[dict] = None,
+        query: Optional[dict] = None,
 ) -> Any:
     """
     Perform operations on the MongoDB database using the MongoDB class.
@@ -309,148 +146,19 @@ def mongo_database(
 
 
 @tool
-async def tavily_extract(urls: List[str]) -> Dict:
-    """Retrieve raw web content from specified URLs using the Tavily API.
-
-    Args:
-        urls (List[str]): The list of URLs to extract content from.
-
-    Returns:
-        Dict: A dictionary containing the extraction results, including raw content and any errors.
-    """
-    api_key = os.getenv("TAVILY_API_KEY")
-    base_url = os.getenv("TAVILY_API_URL")
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-
-    try:
-        payload = {"urls": urls}
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{base_url}/extract", headers=headers, json=payload
-            ) as response:
-                if response.status == 200:
-                    results = await response.json()
-
-                    formatted_results = {
-                        "timestamp": datetime.now().isoformat(),
-                        "success": True,
-                        "results": [],
-                        "failed_results": [],
-                        "response_time": results.get("response_time", "N/A"),
-                    }
-
-                    if "results" in results:
-                        formatted_results["results"] = [
-                            {"url": r["url"], "raw_content": r["raw_content"]}
-                            for r in results["results"]
-                        ]
-
-                    if "failed_results" in results:
-                        formatted_results["failed_results"] = [
-                            {"url": r["url"], "error": r["error"]}
-                            for r in results["failed_results"]
-                        ]
-
-                    return formatted_results
-                else:
-                    error_msg = await response.text()
-                    raise Exception(f"Extraction failed -> {error_msg}") from Exception(
-                        error_msg
-                    )
-
-    except Exception as e:
-        raise Exception(f"Tavily extract failed -> {e}") from e
-
-@tool
-def tavily_search(
-        query: str,
-        search_depth: str = "basic",
-        topic: str = "general",
-        max_results: int = 5,
-        include_images: bool = False,
-        include_image_descriptions: bool = False,
-        include_answer: bool = False,
-        include_raw_content: bool = False,
-        include_domains: Optional[List[str]] = None,
-        exclude_domains: Optional[List[str]] = None,
-        days: int = 3,  # Only relevant for 'news' topic
-) -> Dict:
-    """Search function that can be used to perform web searches using the Tavily search engine.
-
-    Args:
-        query (str): The search query
-        search_depth (str): Level of search depth ('basic' or 'advanced')
-        topic (str): Type of search ('general' or 'news')
-        max_results (int): Maximum number of results to return
-        include_images (bool): Whether to include image results
-        include_image_descriptions (bool): Whether to include descriptions for images
-        include_answer (bool): Whether to include AI-generated answer
-        include_raw_content (bool): Whether to include raw search results
-        include_domains (List[str], optional): List of domains to specifically include
-        exclude_domains (List[str], optional): List of domains to exclude
-        days (int, optional): Number of days back for "news" topic, default is 3
-
-    Returns:
-        Dict: Search results including metadata and formatted content
-    """
-    import requests
-    from typing import Dict, List, Optional
-    import os
-
-    api_key = os.getenv("TAVILY_API_KEY")
-    if not api_key:
-        raise ValueError(
-            "API key for Tavily is missing. Please set the TAVILY_API_KEY environment variable."
-        )
-
-    base_url = "https://api.tavily.com/search"
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        payload = {
-            "api_key": api_key,
-            "query": query,
-            "search_depth": search_depth,
-            "topic": topic,
-            "max_results": max_results,
-            "include_images": include_images,
-            "include_image_descriptions": include_image_descriptions,
-            "include_answer": include_answer,
-            "include_raw_content": include_raw_content,
-            "include_domains": include_domains or [],
-            "exclude_domains": exclude_domains or []
-        }
-
-        # Only add days parameter if topic is news
-        if topic == "news":
-            payload["days"] = days
-
-        response = requests.post(base_url, json=payload)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            error_msg = response.text
-            raise Exception(f"Search failed -> {error_msg}")
-
-    except Exception as e:
-        raise Exception(f"Tavily search failed -> {e}") from e
-
-@tool
 def perplexity_search(
-    query,
-    model="llama-3.1-sonar-small-128k-online",
-    max_tokens=None,
-    temperature=0.2,
-    top_p=0.9,
-    search_domain_filter=None,
-    return_images=False,
-    return_related_questions=False,
-    search_recency_filter="month",
-    top_k=0,
-    presence_penalty=0,
-    frequency_penalty=1,
+        query,
+        model="llama-3.1-sonar-small-128k-online",
+        max_tokens=None,
+        temperature=0.2,
+        top_p=0.9,
+        search_domain_filter=None,
+        return_images=False,
+        return_related_questions=False,
+        search_recency_filter="month",
+        top_k=0,
+        presence_penalty=0,
+        frequency_penalty=1,
 ):
     """
     Queries the Perplexity API with the provided parameters.
@@ -571,12 +279,12 @@ def textract_ocr(file_names: list) -> str:
 
 @tool
 def s3_object_storage(
-    operation: str,
-    bucket_name: Optional[str] = None,
-    file_path: Optional[str] = None,
-    object_name: Optional[str] = None,
-    prefix: Optional[str] = None,
-    region: Optional[str] = None,
+        operation: str,
+        bucket_name: Optional[str] = None,
+        file_path: Optional[str] = None,
+        object_name: Optional[str] = None,
+        prefix: Optional[str] = None,
+        region: Optional[str] = None,
 ) -> Any:
     """
     Perform an S3 storage operation.
@@ -619,10 +327,10 @@ def s3_object_storage(
                 "Operation 'upload_file' requires 'file_path' and 'bucket_name'."
             )
         if (
-            operation == "download_file"
-            and not file_path
-            or not bucket_name
-            or not object_name
+                operation == "download_file"
+                and not file_path
+                or not bucket_name
+                or not object_name
         ):
             raise ValueError(
                 "Operation 'download_file' requires 'file_path', 'bucket_name', and 'object_name'."
@@ -686,15 +394,15 @@ def capture_image(save_path="captured_image.jpg"):
 
 @tool
 def weather_forecast(
-    operation: str,
-    lat: float,
-    lon: float,
-    units: str = "standard",
-    lang: str = "en",
-    exclude: Optional[List[str]] = None,
-    timestamp: Optional[int] = None,
-    date: Optional[str] = None,
-    timezone: Optional[str] = None,
+        operation: str,
+        lat: float,
+        lon: float,
+        units: str = "standard",
+        lang: str = "en",
+        exclude: Optional[List[str]] = None,
+        timestamp: Optional[int] = None,
+        date: Optional[str] = None,
+        timezone: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Get weather information from OpenWeather One Call API 3.0
