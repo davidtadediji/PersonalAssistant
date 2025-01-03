@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableBranch
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-
+from langchain_groq import ChatGroq
 from app.tools.current_location_tool import get_current_location_tool
 from app.tools.geocode_tool import get_geocode_location_tool
 from app.tools.image_url_interpreter_tool import get_image_url_interpreter_tool
@@ -103,6 +103,7 @@ from app.tools.math_tools import get_math_tool
 _get_pass("TAVILY_API_KEY")
 
 calculate = get_math_tool(ChatOpenAI(model=os.getenv("EXECUTION_MODEL")))
+# calculate = get_math_tool(ChatGroq(model="mixtral-8x7b-32768"))
 science_and_computation = get_wolfram_tool()
 geocode_location = get_geocode_location_tool()
 reverse_geocode = get_reverse_geocode_tool()
@@ -130,9 +131,10 @@ tools = [
         store_user_personal_info,
         retrieve_user_personal_info,
     ]
-
 planner = create_planner(
-    ChatOpenAI(model=os.getenv("PLANNING_MODEL")),
-    tools,
-    prompt,
+    # ChatOpenAI(model=os.getenv("PLANNING_MODEL")),
+    ChatGroq(model="llama-3.3-70b-specdec"),
+    tools
+,
+    prompt
 )

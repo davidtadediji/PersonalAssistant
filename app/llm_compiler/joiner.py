@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain import hub
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
 
 load_dotenv()
@@ -34,7 +35,8 @@ class JoinOutputs(BaseModel):
 joiner_prompt = hub.pull("wfh/llm-compiler-joiner").partial(
     examples="Note: Where appropriate, a search engine tool could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails."
 )  # You can optionally add examples
-llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
+# llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
+llm = ChatGroq(model="llama-3.3-70b-specdec")
 
 runnable = joiner_prompt | llm.with_structured_output(JoinOutputs)
 
