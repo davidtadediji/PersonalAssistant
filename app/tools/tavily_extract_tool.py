@@ -14,7 +14,7 @@ class TavilyExtractQuery(BaseModel):
     urls: List[str]  # A list of URLs to extract content from
 
 
-def tavily_extract(urls: List[str]) -> Dict:
+def extract_raw_content_from_url(urls: List[str]) -> Dict:
     """Retrieve raw web content from specified URLs using the Tavily API.
 
     Args:
@@ -70,7 +70,7 @@ def tavily_extract(urls: List[str]) -> Dict:
 def get_tavily_extract_tool():
     return StructuredTool.from_function(
         name="tavily_extract",
-        func=tavily_extract,
+        func=extract_raw_content_from_url,
         description=(
             "tavily_extract(urls: List[str]) -> dict:\n"
             " - Retrieve raw web content from specified URLs using the Tavily API.\n"
