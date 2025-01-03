@@ -19,14 +19,12 @@ from app.tools.geocode_tool import get_geocode_location_tool
 from app.tools.image_url_interpreter_tool import get_image_url_interpreter_tool
 from app.tools.personal_information_tool import (
     get_store_user_personal_info_tool,
-    retrieve_user_personal_info,
     get_retrieve_user_personal_info_tool,
 )
 from app.tools.reverse_geocode_tool import get_reverse_geocode_tool
 from app.tools.tavily_extract_tool import get_tavily_extract_tool
 from app.tools.weather_forecast_tool import (
     get_weather_forecast_tool,
-    get_weather_information_tool,
 )
 from app.tools.wolfram_tool import get_wolfram_tool
 from app.llm_compiler.output_parser import LLMCompilerPlanParser
@@ -120,9 +118,7 @@ search = TavilySearchResults(
     description='tavily_search_results_json(query="the search query") - a search engine. Where appropriate, it could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails.',
 )
 
-planner = create_planner(
-    ChatOpenAI(model=os.getenv("PLANNING_MODEL")),
-    [
+tools = [
         search,
         science_and_computation,
         geocode_location,
@@ -133,6 +129,10 @@ planner = create_planner(
         image_url_interpreter,
         store_user_personal_info,
         retrieve_user_personal_info,
-    ],
+    ]
+
+planner = create_planner(
+    ChatOpenAI(model=os.getenv("PLANNING_MODEL")),
+    tools,
     prompt,
 )

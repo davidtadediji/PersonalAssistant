@@ -11,6 +11,7 @@ __pycache__/
 # IDE files
 .idea/
 
+*.wav
 # Checkpoints
 app/checkpoints
 
