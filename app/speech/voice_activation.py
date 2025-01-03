@@ -1,5 +1,7 @@
-import speech_recognition as sr
 import asyncio
+
+import speech_recognition as sr
+
 from conversation import ConversationManager
 
 

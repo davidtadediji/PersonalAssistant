@@ -1,12 +1,15 @@
-from langchain.tools import StructuredTool
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel
+from typing import List, Dict, Any
+
 from fpdf import FPDF
+from langchain.tools import StructuredTool
+from pydantic import BaseModel
+
 
 class CreateFileInput(BaseModel):
     filename: str
     file_type: str  # The type of file to create (e.g., 'pdf', 'txt')
     content: List[Dict[str, Any]]  # A list of content sections
+
 
 def create_file(filename: str, file_type: str, content: List[Dict[str, Any]]) -> str:
     """
@@ -57,6 +60,7 @@ def create_file(filename: str, file_type: str, content: List[Dict[str, Any]]) ->
     else:
         raise ValueError(f"Unsupported file type: {file_type}")
 
+
 def get_create_file_tool():
     return StructuredTool.from_function(
         name="create_file",
@@ -78,5 +82,3 @@ def get_create_file_tool():
         ),
         input_schema=CreateFileInput,
     )
-
-

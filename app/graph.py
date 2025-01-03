@@ -213,7 +213,7 @@ project_root = (
     Path(__file__).resolve().parent
 )  # This is the directory where server.py is located
 resources_dir = (
-    project_root / "resources"
+        project_root / "resources"
 )  # Use the / operator to join paths (pathlib feature)
 
 # Ensure the resources directory exists

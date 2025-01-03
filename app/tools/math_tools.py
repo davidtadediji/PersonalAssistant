@@ -115,9 +115,9 @@ def get_math_tool(llm: ChatOpenAI):
     extractor = prompt | llm.with_structured_output(ExecuteCode)
 
     def calculate_expression(
-        problem: str,
-        context: Optional[List[str]] = None,
-        config: Optional[RunnableConfig] = None,
+            problem: str,
+            context: Optional[List[str]] = None,
+            config: Optional[RunnableConfig] = None,
     ):
         chain_input = {"problem": problem}
         if context:

@@ -1,10 +1,8 @@
-import os
 from typing import Union, List
 
 from dotenv import load_dotenv
 from langchain import hub
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
-from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
 
@@ -46,11 +44,11 @@ def _parse_joiner_output(decision: JoinOutputs) -> List[BaseMessage]:
     if isinstance(decision.action, RePlan):
         return {
             "messages": response
-            + [
-                SystemMessage(
-                    content=f"Context from last attempt: {decision.action.feedback}"
-                )
-            ]
+                        + [
+                            SystemMessage(
+                                content=f"Context from last attempt: {decision.action.feedback}"
+                            )
+                        ]
         }
     else:
         return {"messages": response + [AIMessage(content=decision.action.response)]}

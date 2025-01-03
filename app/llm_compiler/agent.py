@@ -1,9 +1,8 @@
-from typing import Annotated, TypedDict, Union
-from langchain_openai import ChatOpenAI
+from typing import Annotated, TypedDict
+
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_groq import ChatGroq
 from langgraph.graph import END, StateGraph, START
-import os
-from langgraph.prebuilt import tools_condition
 from langgraph.graph.message import add_messages
 
 from app.llm_compiler.joiner import joiner
@@ -15,7 +14,8 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
+# llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
+llm = ChatGroq(model="llama-3.3-70b-specdec")
 llm_with_tools = llm.bind_tools(tools, parallel_tool_calls=False)
 
 
@@ -105,12 +105,12 @@ from PIL import Image as PILImage
 img = PILImage.open("../../resources/llm_compiler.png")
 img.show()
 
-
 for step in chain.stream(
-    {"messages": [HumanMessage(content="How are you")]}
+        {"messages": [HumanMessage(content="How are you")]}
 ):
     print(step)
     print("---")
+
 
 # for s in chain.stream(
 #     {

@@ -1,6 +1,6 @@
 import os
 import wave
-import pyaudio
+
 import torch
 import whisper
 from openvoice import se_extractor
@@ -166,11 +166,11 @@ deepgram_ws_url = os.getenv("DEEPGRAM_WS_URL")
 
 async def deepgram_transcription():
     async with websockets.connect(
-        deepgram_ws_url,
-        extra_headers={
-            "Authorization": f"Token {deepgram_api_key}",
-            "Sec-WebSocket-Protocol": "token",
-        },
+            deepgram_ws_url,
+            extra_headers={
+                "Authorization": f"Token {deepgram_api_key}",
+                "Sec-WebSocket-Protocol": "token",
+            },
     ) as ws:
         # Audio streaming setup
         p = pyaudio.PyAudio()

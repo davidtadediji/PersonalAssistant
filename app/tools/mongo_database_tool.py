@@ -43,7 +43,7 @@ class MongoDB:
         return results if results else []
 
     def update(
-        self, filter_condition: Dict[str, Any], update_data: Dict[str, Any]
+            self, filter_condition: Dict[str, Any], update_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Update a document in the MongoDB collection based on a filter."""
         if not self.collection:
@@ -86,13 +86,13 @@ class MongoDatabaseQuery(BaseModel):
 
 
 def mongo_database(
-    operation: str,
-    db_name: str,
-    collection_name: Optional[str] = None,
-    data: Optional[dict] = None,
-    filter_condition: Optional[dict] = None,
-    update_data: Optional[dict] = None,
-    query: Optional[dict] = None,
+        operation: str,
+        db_name: str,
+        collection_name: Optional[str] = None,
+        data: Optional[dict] = None,
+        filter_condition: Optional[dict] = None,
+        update_data: Optional[dict] = None,
+        query: Optional[dict] = None,
 ) -> Any:
     """
     Perform operations on the MongoDB database using the MongoDB class.

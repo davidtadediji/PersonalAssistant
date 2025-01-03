@@ -1,8 +1,9 @@
-import wave
-import pyaudio
 import os
-from faster_whisper import WhisperModel
+import wave
 from time import time
+
+import pyaudio
+from faster_whisper import WhisperModel
 
 from app.llm_compiler.agent import query_agent
 
@@ -74,7 +75,6 @@ def transcribe_audio(file_path, model):
         transcription += segment.text + " "
 
     return transcription.strip()
-
 
 
 def main():
