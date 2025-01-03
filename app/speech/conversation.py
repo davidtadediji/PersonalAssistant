@@ -1,28 +1,10 @@
 import asyncio
-from fileinput import filename
-import speech_recognition as sr
-from dotenv import load_dotenv
-import shutil
-import subprocess
-import requests
-import time
 import os
 from asyncio import Queue
-from pydub import AudioSegment
-import simpleaudio as sa
 from dataclasses import dataclass
 from typing import Optional
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.chains import LLMChain
+
+import simpleaudio as sa
 from deepgram import (
     DeepgramClient,
     DeepgramClientOptions,
@@ -31,46 +13,12 @@ from deepgram import (
     Microphone,
     SpeakOptions,
 )
+from dotenv import load_dotenv
+from pydub import AudioSegment
+
+from app.llm_compiler.agent import query_agent
 
 load_dotenv()
-
-
-class LanguageModelProcessor:
-    def __init__(self):
-        self.llm = ChatGroq(
-            temperature=0,
-            model_name="mixtral-8x7b-32768",
-            groq_api_key=os.getenv("GROQ_API_KEY"),
-        )
-        self.memory = ConversationBufferMemory(
-            memory_key="chat_history", return_messages=True
-        )
-
-        system_prompt = "You are a conversational assistant named Eliza. Use short, conversational responses as if you're having a live conversation. Your response should be under 20 words. Do not respond with any code, only conversation"
-
-        self.prompt = ChatPromptTemplate.from_messages(
-            [
-                SystemMessagePromptTemplate.from_template(system_prompt),
-                MessagesPlaceholder(variable_name="chat_history"),
-                HumanMessagePromptTemplate.from_template("{text}"),
-            ]
-        )
-
-        self.conversation = LLMChain(
-            llm=self.llm, prompt=self.prompt, memory=self.memory
-        )
-
-    def process(self, text):
-        self.memory.chat_memory.add_user_message(text)
-        start_time = time.time()
-        response = self.conversation.invoke({"text": text})
-        end_time = time.time()
-
-        self.memory.chat_memory.add_ai_message(response["text"])
-
-        elapsed_time = int((end_time - start_time) * 1000)
-        print(f"LLM ({elapsed_time}ms): {response['text']}")
-        return response["text"]
 
 
 def text2speech(text):
@@ -83,7 +31,7 @@ def text2speech(text):
             model="aura-asteria-en", encoding="linear16", container="wav"
         )
 
-        response = deepgram.speak.v("1").save(filename, SPEAK_OPTIONS, options)
+        deepgram.speak.v("1").save(filename, SPEAK_OPTIONS, options)
         return filename
 
     except Exception as e:
@@ -187,7 +135,6 @@ class AudioPlayback:
 
 class ConversationManager:
     def __init__(self):
-        self.llm = LanguageModelProcessor()
         self.transcription_queue = Queue()
         self.is_listening = True
         self.audio_playback = AudioPlayback()
@@ -216,8 +163,8 @@ class ConversationManager:
     async def start_listening(self):
         self.is_listening = True
         if (
-            self.current_transcription_task is None
-            or self.current_transcription_task.done()
+                self.current_transcription_task is None
+                or self.current_transcription_task.done()
         ):
             self.current_transcription_task = asyncio.create_task(
                 get_transcript(self.handle_transcription)
@@ -248,7 +195,8 @@ class ConversationManager:
                         await self.stop_listening()
                         break
 
-                    llm_response = self.llm.process(transcription)
+                    llm_response = query_agent(transcription)
+                    # llm_response = self.llm.process(transcription)
                     print(f"LLM Response: {llm_response}")
 
                     audio_response = text2speech(llm_response)

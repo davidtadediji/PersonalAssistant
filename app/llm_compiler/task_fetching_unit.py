@@ -10,7 +10,7 @@ from langchain_core.runnables import (
 from typing_extensions import TypedDict
 
 from app.llm_compiler.planner import planner
-from output_parser import Task
+from app.llm_compiler.output_parser import Task
 
 
 def _get_observations(messages: List[BaseMessage]) -> Dict[int, Any]:

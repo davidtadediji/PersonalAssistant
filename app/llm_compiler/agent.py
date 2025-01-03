@@ -46,7 +46,7 @@ project_root = (
     Path(__file__).resolve().parent
 )  # This is the directory where server.py is located
 resources_dir = (
-    project_root / "../../resources"
+        project_root / "../../resources"
 )  # Use the / operator to join paths (pathlib feature)
 
 # Ensure the resources directory exists
@@ -62,8 +62,29 @@ from PIL import Image as PILImage
 img = PILImage.open("../../resources/llm_compiler.png")
 img.show()
 
-for step in chain.stream(
-    {"messages": [HumanMessage(content="What is my name and age?")]}
-):
-    print(step)
-    print("---")
+
+# for step in chain.stream(
+#     {"messages": [HumanMessage(content="How are you")]}
+# ):
+#     print(step)
+#     print("---")
+
+# for s in chain.stream(
+#     {
+#         "messages": [
+#             HumanMessage(content="How are you")
+#         ]
+#     },
+#     {"recursion_limit": 10},
+# ):
+#     if "__end__" in s:
+#         print(s)
+#         print("----")
+
+
+def query_agent(query: str):
+    last_msg = ""
+    for msg in chain.stream(
+            {"messages": [HumanMessage(content=query)]}, stream_mode="messages"):
+        last_msg = msg[0] if isinstance(msg, tuple) else msg
+    return last_msg.content

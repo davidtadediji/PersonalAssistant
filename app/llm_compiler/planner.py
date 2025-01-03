@@ -29,7 +29,7 @@ from app.tools.weather_forecast_tool import (
     get_weather_information_tool,
 )
 from app.tools.wolfram_tool import get_wolfram_tool
-from output_parser import LLMCompilerPlanParser
+from app.llm_compiler.output_parser import LLMCompilerPlanParser
 
 load_dotenv()
 
