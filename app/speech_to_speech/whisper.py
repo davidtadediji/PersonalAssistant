@@ -13,7 +13,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 SILENCE_THRESHOLD = 500  # RMS threshold to detect silence
-SILENCE_DURATION = 2  # Seconds of silence to consider as end of speech
+SILENCE_DURATION = 2  # Seconds of silence to consider as end of speech_to_speech
 
 
 def is_silent(data):

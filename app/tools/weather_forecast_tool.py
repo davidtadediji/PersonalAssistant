@@ -4,7 +4,8 @@ from typing import Optional, List, Dict
 import requests
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field, validator, Any
+from pydantic import BaseModel, Field, validator
+from typing import  Any
 
 from app.logger import configured_logger
 

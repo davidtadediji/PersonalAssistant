@@ -219,7 +219,7 @@ def user_chatbot_conversation():
         if mode == "1":
             asyncio.run(deepgram_transcription())
         elif mode == "2":
-            audio_file = "temp_recording.wav"
+            audio_file = "../temp_recording.wav"
             record_audio(audio_file)
             transcription = transcribe_with_whisper(audio_file)
             print(f"Whisper transcription: {transcription}")

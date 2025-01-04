@@ -1,147 +1,74 @@
 # client.py
-import json
-
-import pyperclip
-from PIL import Image as PILImage
+import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from graph import graph
+from app.llm_compiler.agent import query_agent
 
 load_dotenv()
 
-import streamlit as st
-
+# Set up the Streamlit app
 st.set_page_config(layout="wide")
+st.title("Personal Assistant Chat")
 
-# Set the title of the app
-st.title("Form Generator")
+# Initialize session state for chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-# Create two columns with custom widths
-col1, col2 = st.columns([6, 6])  # Adjusted columns for wider display areas
 
-# Left column: Big input area and 'Query' button
-with col1:
-    st.subheader("Input Requirements")
+# Function to handle the chat interaction
+def handle_chat(prompt):
+    if prompt:
+        # Add user message to chat history
+        st.session_state.chat_history.append({"role": "user", "content": prompt})
 
-    # Big input area for text
-    user_input = st.text_area(
-        "Enter your design requirements:", height=400
-    )  # Large input area
+        # Prepare inputs for the agent
+        config = {"configurable": {"thread_id": "1"}}
+        messages = [HumanMessage(content=prompt)]
 
-    prompt = user_input
+        # Invoke the agent
+        result = query_agent(query=prompt)
 
-    print(prompt)
-
-    import streamlit as st
-
-    # Query button
-    if st.button("Generate"):
-        if user_input:
-            # Prepare inputs for the graph
-
-            # Specify a thread
-            config = {"configurable": {"thread_id": "1"}}
-
-            messages = [HumanMessage(content=prompt)]
-
-            # Invoke the graph
-            result = graph.invoke({"messages": messages}, config)
-
-            # Debug: Print the result
-            print(result)
-
-            # Extract the last message content
-            if result and isinstance(result, dict) and "messages" in result:
-                # Ensure the messages list is not empty
-                if result["messages"]:
-                    last_message = result["messages"][-1]  # Select the last message
-                    if hasattr(last_message, "content"):
-                        full_response = last_message.content
-                    else:
-                        full_response = "No content in the last message."
+        # Extract the agent's response
+        if result and isinstance(result, dict) and "messages" in result:
+            if result["messages"]:
+                last_message = result["messages"][-1]  # Select the last message
+                if hasattr(last_message, "content"):
+                    full_response = last_message.content
                 else:
-                    full_response = "No messages found in the result."
+                    full_response = "I'm sorry, I couldn't process that. Can you please rephrase?"
             else:
-                full_response = "No 'messages' key found in the result."
-
-            # Save the result to session state
-            st.session_state.query_result = full_response
-            st.success("Query processed!")
+                full_response = "I'm sorry, I didn't get a response. Can you try again?"
         else:
-            st.warning("Please enter some text in the input area.")
+            full_response = "I'm sorry, something went wrong. Please try again."
 
-# Right column: Editable display area with 'Edit' and 'Save' buttons
-with col2:
-    st.subheader("Form Renderer JSON")
+        # Add agent response to chat history
+        st.session_state.chat_history.append({"role": "assistant", "content": full_response})
 
-    # Check if query result exists in session state, otherwise set default message
-    display_text = st.session_state.get("query_result", "No query result yet.")
 
-    # A session state variable to track the editable state
-    if "editable_mode" not in st.session_state:
-        st.session_state.editable_mode = False  # Default is non-editable
+# Display the chat interface
+st.subheader("Chat with Your Personal Assistant")
 
-    # Show the text area (editable if in editable mode)
-    editable_display = st.text_area(
-        "Edit the generated form definition:",
-        value=display_text,
-        height=400,
-        disabled=not st.session_state.editable_mode,
-    )
+# Display chat history
+for message in st.session_state.chat_history:
+    if message["role"] == "user":
+        st.markdown(f"**You:** {message['content']}")
+    else:
+        st.markdown(f"**Assistant:** {message['content']}")
 
-    st.markdown(
-        """
-        <style>
-            .custom-container {
-                width: 80%;  /* Adjust this to set the width of the entire row */
-                margin: 0 auto;  /* Center the row */
-            }
-        </style>
-    """,
-        unsafe_allow_html=True,
-    )
+# Input area for new messages
+user_input = st.text_input("Type your message here:", key="input", placeholder="Ask me anything...")
 
-    # Rest of the code remains the same (Edit, Save Locally, Save to Database buttons)
-    # Buttons layout: both Edit and Save buttons together at the bottom
-    button_col1, button_col2, button_col3, button_col4 = st.columns([1, 1, 1, 1])
+# Send button
+if st.button("Send"):
+    handle_chat(user_input)
+    st.experimental_rerun()
 
-    # Edit button (sets the editable_mode to True)
-    with button_col1:
-        if st.button("Edit"):
-            st.session_state.editable_mode = True  # Enable editing mode
+# Optional: Add a reset button to clear chat history
+if st.button("Reset Chat"):
+    st.session_state.chat_history = []
+    st.experimental_rerun()
 
-        # Add Copy to Clipboard button
-    with button_col2:
-        if st.button("Copy to Clipboard"):
-            pyperclip.copy(editable_display)  # Copy the text area content to clipboard
-            st.success("Copied to clipboard!")
-
-    # Save button (saves the text when clicked)
-    with button_col3:
-        if st.button("Save Locally"):
-            try:
-                # Validate if the content is valid JSON
-                json_data = json.loads(editable_display)
-
-                # Save the validated JSON content to a file
-                with open("../resources/form_generated.json", "w") as json_file:
-                    json.dump(
-                        json_data, json_file, indent=4
-                    )  # Save with pretty formatting
-                st.success("Valid JSON saved successfully!")
-
-                # Disable editing after saving
-                st.session_state.editable_mode = False
-            except json.JSONDecodeError as e:
-                st.error(f"Invalid JSON format: {e}")
-
-# Display the graph only once after it's created
-if "graph_displayed" not in st.session_state:
-    st.session_state.graph_displayed = False
-
-if not st.session_state.graph_displayed:
-    # Display the graph image
-    img = PILImage.open("../resources/graph.png")
-    img.show()
-    st.session_state.graph_displayed = True
+# Optional: Add a greeting from the assistant if the chat is empty
+if not st.session_state.chat_history:
+    st.markdown("**Assistant:** Hi! I'm your personal assistant. How can I help you today?")

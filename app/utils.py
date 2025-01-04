@@ -12,7 +12,7 @@ def get_resource_path(resource_name: str) -> Path:
         Path: The full path to the resource file.
     """
     project_root = Path(__file__).resolve().parent
-    resources_dir = project_root / "../../resources"
+    resources_dir = project_root / "resources"
 
     # Ensure the resources directory exists
     resources_dir.mkdir(parents=True, exist_ok=True)

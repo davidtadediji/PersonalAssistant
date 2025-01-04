@@ -25,7 +25,7 @@ async def listen_for_phrase():
                     await manager.main()  # Start/resume conversation
 
             except sr.UnknownValueError:
-                pass  # Continue listening if speech is unintelligible
+                pass  # Continue listening if speech_to_speech is unintelligible
             except sr.RequestError as e:
                 print(f"Could not request results: {e}")
                 break
