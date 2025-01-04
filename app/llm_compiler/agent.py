@@ -3,7 +3,7 @@ from typing import Annotated, TypedDict
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
-
+from langgraph.types import interrupt
 from app.llm_compiler.joiner import joiner
 from app.llm_compiler.task_fetching_unit import plan_and_schedule
 
@@ -18,6 +18,9 @@ def should_continue(state):
         return END
     return "plan_and_schedule"
 
+def human_node(state: State):
+    value = interrupt(f"What should I say in response to {state['messages']}")
+    return {"messages": [{"role": "assistant", "content": value}]}
 
 graph_builder = StateGraph(State)
 
