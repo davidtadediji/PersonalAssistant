@@ -1,14 +1,15 @@
-from pydantic import BaseModel, Field
 from typing import Dict
-import os
+
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from openai import OpenAI
+from pydantic import BaseModel, Field
 
 from app.llm_compiler.llm_initializer import execution_llm
 
 load_dotenv()
 client = OpenAI()
+
 
 class GeneralKnowledgeInput(BaseModel):
     question: str = Field(..., description="The question to ask the model.")
@@ -37,11 +38,8 @@ def general_knowledge_up_to_2022(question: str) -> Dict:
         )
         # Extract the content from the response and return it
         return {
-            "success": True,
-            "input_message": question,
-            "response": response.choices[0].message.content,
+            "response": response.content,
         }
-
 
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}

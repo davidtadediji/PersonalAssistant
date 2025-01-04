@@ -51,8 +51,8 @@ def _execute_task(task, observations, config):
         return tool_to_use.invoke(resolved_args, config)
     except Exception as e:
         return (
-                f"ERROR(Failed to call {tool_to_use.name} with args {args}."
-                + f" Args resolved to {resolved_args}. Error: {repr(e)})"
+            f"ERROR(Failed to call {tool_to_use.name} with args {args}."
+            + f" Args resolved to {resolved_args}. Error: {repr(e)})"
         )
 
 
@@ -106,7 +106,7 @@ def schedule_task(task_inputs, config):
 
 
 def schedule_pending_task(
-        task: Task, observations: Dict[int, Any], retry_after: float = 0.2
+    task: Task, observations: Dict[int, Any], retry_after: float = 0.2
 ):
     while True:
         deps = task["dependencies"]
@@ -147,9 +147,9 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
             )
             args_for_tasks[task["idx"]] = task["args"]
             if (
-                    # Depends on other tasks
-                    deps
-                    and (any([dep not in observations for dep in deps]))
+                # Depends on other tasks
+                deps
+                and (any([dep not in observations for dep in deps]))
             ):
                 futures.append(
                     executor.submit(

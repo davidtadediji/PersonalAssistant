@@ -1,4 +1,3 @@
-import os
 from typing import Dict
 
 from dotenv import load_dotenv
@@ -6,7 +5,7 @@ from langchain_core.tools import StructuredTool
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from app.llm_compiler.llm_initializer import execution_llm, chat_llm
+from app.llm_compiler.llm_initializer import chat_llm
 
 # Load environment variables
 load_dotenv()
@@ -15,7 +14,9 @@ client = OpenAI()
 
 
 class DirectResponseInput(BaseModel):
-    message: str = Field(..., description="The message to pass directly to the LLM for response.")
+    message: str = Field(
+        ..., description="The message to pass directly to the LLM for response."
+    )
 
 
 def direct_response(message: str) -> Dict:
@@ -41,9 +42,7 @@ def direct_response(message: str) -> Dict:
         )
         # Extract the content from the response and return it
         return {
-            "success": True,
-            "input_message": message,
-            "response": response.choices[0].message.content,
+            "response": f"Respond with this: \n {response.content}",
         }
 
     except Exception as e:
@@ -56,8 +55,8 @@ def get_direct_response_tool():
         func=direct_response,
         description=(
             "direct_response(message: str) -> dict:\n"
-            " - Sends a message that do not require tool call directly to a model for regular response.\n"
-            " - Returns a dictionary containing the input message and the LLM's response.\n"
+            " - Evaluates a message that does not require tool call and prescribes exactly what to respond with.\n"
+            " - Returns a dictionary containing the input message and the instruction on how to respond.\n"
         ),
         input_schema=DirectResponseInput,  # Using the correct input schema model here
     )

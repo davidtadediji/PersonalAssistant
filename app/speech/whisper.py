@@ -25,7 +25,9 @@ def is_silent(data):
 def record_audio(filename):
     """Record audio until silence is detected."""
     audio = pyaudio.PyAudio()
-    stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
+    stream = audio.open(
+        format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK
+    )
 
     print("Recording...")
     frames = []
@@ -52,11 +54,11 @@ def record_audio(filename):
     audio.terminate()
 
     # Save audio to file
-    with wave.open(filename, 'wb') as wf:
+    with wave.open(filename, "wb") as wf:
         wf.setnchannels(CHANNELS)
         wf.setsampwidth(audio.get_sample_size(FORMAT))
         wf.setframerate(RATE)
-        wf.writeframes(b''.join(frames))
+        wf.writeframes(b"".join(frames))
 
     return filename
 
@@ -66,7 +68,9 @@ def transcribe_audio(file_path, model):
     segments, info = model.transcribe(file_path, vad_filter=True)
     transcription = ""
 
-    print(f"Detected language: {info.language} with probability {info.language_probability:.2f}")
+    print(
+        f"Detected language: {info.language} with probability {info.language_probability:.2f}"
+    )
     print("Transcription:")
 
     # Combine all segments into a single string

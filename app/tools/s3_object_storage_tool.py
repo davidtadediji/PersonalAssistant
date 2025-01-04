@@ -57,7 +57,7 @@ class S3:
             raise Exception(f"Error deleting bucket -> {e}")
 
     def upload_file(
-            self, file_path: str, bucket_name: str, object_name: Optional[str] = None
+        self, file_path: str, bucket_name: str, object_name: Optional[str] = None
     ) -> str:
         try:
             if not object_name:
@@ -99,12 +99,12 @@ class S3ObjectStorageQuery(BaseModel):
 
 
 def s3_object_storage(
-        operation: str,
-        bucket_name: Optional[str] = None,
-        file_path: Optional[str] = None,
-        object_name: Optional[str] = None,
-        prefix: Optional[str] = None,
-        region: Optional[str] = None,
+    operation: str,
+    bucket_name: Optional[str] = None,
+    file_path: Optional[str] = None,
+    object_name: Optional[str] = None,
+    prefix: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> Any:
     """
     Perform an S3 storage operation.
@@ -147,10 +147,10 @@ def s3_object_storage(
                 "Operation 'upload_file' requires 'file_path' and 'bucket_name'."
             )
         if (
-                operation == "download_file"
-                and not file_path
-                or not bucket_name
-                or not object_name
+            operation == "download_file"
+            and not file_path
+            or not bucket_name
+            or not object_name
         ):
             raise ValueError(
                 "Operation 'download_file' requires 'file_path', 'bucket_name', and 'object_name'."

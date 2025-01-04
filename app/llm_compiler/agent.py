@@ -12,21 +12,6 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-graph_builder = StateGraph(State)
-
-# 1.  Define vertices
-# We defined plan_and_schedule above already
-# Assign each node to a state variable to update
-graph_builder.add_node("plan_and_schedule", plan_and_schedule)
-graph_builder.add_node("join", joiner)
-
-## Define edges
-graph_builder.add_edge("plan_and_schedule", "join")
-
-
-### This condition determines looping logic
-
-
 def should_continue(state):
     messages = state["messages"]
     if isinstance(messages[-1], AIMessage):
@@ -34,12 +19,20 @@ def should_continue(state):
     return "plan_and_schedule"
 
 
+graph_builder = StateGraph(State)
+
+# Assign each node to a state variable to update
+graph_builder.add_node("plan_and_schedule", plan_and_schedule)
+graph_builder.add_node("join", joiner)
+
+## Define edges
+graph_builder.add_edge(START, "plan_and_schedule")
+graph_builder.add_edge("plan_and_schedule", "join")
 graph_builder.add_conditional_edges(
     "join",
     # Next, we pass in the function that will determine which node is called next.
     should_continue,
 )
-graph_builder.add_edge(START, "plan_and_schedule")
 chain = graph_builder.compile()
 
 # Graph visualization code
@@ -76,6 +69,7 @@ img.show()
 def query_agent(query: str):
     last_msg = ""
     for msg in chain.stream(
-            {"messages": [HumanMessage(content=query)]}, stream_mode="messages"):
+        {"messages": [HumanMessage(content=query)]}, stream_mode="messages"
+    ):
         last_msg = msg[0] if isinstance(msg, tuple) else msg
     return last_msg.content

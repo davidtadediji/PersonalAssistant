@@ -30,7 +30,7 @@ class JoinOutputs(BaseModel):
 
 
 joiner_prompt = hub.pull("wfh/llm-compiler-joiner").partial(
-    examples="Note: Where appropriate, a search engine tool could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails, Do not alter response from direct response tool relay to the user as is."
+    examples="Note: Where appropriate, a search engine tool could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails"
 )  # You can optionally add examples
 # llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
 
@@ -44,11 +44,11 @@ def _parse_joiner_output(decision: JoinOutputs) -> List[BaseMessage]:
     if isinstance(decision.action, RePlan):
         return {
             "messages": response
-                        + [
-                            SystemMessage(
-                                content=f"Context from last attempt: {decision.action.feedback}"
-                            )
-                        ]
+            + [
+                SystemMessage(
+                    content=f"Context from last attempt: {decision.action.feedback}"
+                )
+            ]
         }
     else:
         return {"messages": response + [AIMessage(content=decision.action.response)]}

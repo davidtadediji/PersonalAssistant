@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 
 load_dotenv()
 
@@ -12,13 +13,27 @@ def initialize_llm():
     provider = os.getenv("LLM_PROVIDER", "groq")
     if provider.lower() == "groq":
         model = os.getenv("GROQ_PLANNING_MODEL")
-        return ChatGroq(model=model), ChatGroq(model=os.getenv("GROQ_CHAT_MODEL"), temperature="0"), ChatGroq(model=os.getenv("GROQ_EXECUTION_MODEL"))
+        return (
+            ChatGroq(model=model),
+            ChatGroq(model=os.getenv("GROQ_CHAT_MODEL"), temperature="0"),
+            ChatGroq(model=os.getenv("GROQ_EXECUTION_MODEL")),
+        )
     elif provider.lower() == "openai":
         model = os.getenv("OPENAI_PLANNING_MODEL")
-        return ChatOpenAI(model=model), ChatOpenAI(model=os.getenv("OPENAI_EXECUTION_MODEL")), ChatOpenAI(model=os.getenv("OPENAI_EXECUTION_MODEL"))
+        return (
+            ChatOpenAI(model=model),
+            ChatOpenAI(model=os.getenv("OPENAI_EXECUTION_MODEL")),
+            ChatOpenAI(model=os.getenv("OPENAI_EXECUTION_MODEL")),
+        )
+    elif provider.lower() == "ollama":
+        model = os.getenv("OLLAMA_PLANNING_MODEL")
+        return (
+            ChatOllama(model=model),
+            ChatOllama(model=os.getenv("OLLAMA_CHAT_MODEL")),
+            ChatOllama(model=os.getenv("OLLAMA_EXECUTION_MODEL")),
+        )
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}")
 
 
 llm, chat_llm, execution_llm = initialize_llm()
-

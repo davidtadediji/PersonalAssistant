@@ -21,13 +21,13 @@ load_dotenv()
 
 @tool
 def sql_database(
-        operation,
-        db_name,
-        table_name=None,
-        data=None,
-        columns=None,
-        condition=None,
-        query=None,
+    operation,
+    db_name,
+    table_name=None,
+    data=None,
+    columns=None,
+    condition=None,
+    query=None,
 ):
     """
     Perform CRUD operations and custom queries on the database.
@@ -100,13 +100,13 @@ def sql_database(
 
 @tool
 def mongo_database(
-        operation: str,
-        db_name: str,
-        collection_name: Optional[str] = None,
-        data: Optional[dict] = None,
-        filter_condition: Optional[dict] = None,
-        update_data: Optional[dict] = None,
-        query: Optional[dict] = None,
+    operation: str,
+    db_name: str,
+    collection_name: Optional[str] = None,
+    data: Optional[dict] = None,
+    filter_condition: Optional[dict] = None,
+    update_data: Optional[dict] = None,
+    query: Optional[dict] = None,
 ) -> Any:
     """
     Perform operations on the MongoDB database using the MongoDB class.
@@ -147,18 +147,18 @@ def mongo_database(
 
 @tool
 def perplexity_search(
-        query,
-        model="llama-3.1-sonar-small-128k-online",
-        max_tokens=None,
-        temperature=0.2,
-        top_p=0.9,
-        search_domain_filter=None,
-        return_images=False,
-        return_related_questions=False,
-        search_recency_filter="month",
-        top_k=0,
-        presence_penalty=0,
-        frequency_penalty=1,
+    query,
+    model="llama-3.1-sonar-small-128k-online",
+    max_tokens=None,
+    temperature=0.2,
+    top_p=0.9,
+    search_domain_filter=None,
+    return_images=False,
+    return_related_questions=False,
+    search_recency_filter="month",
+    top_k=0,
+    presence_penalty=0,
+    frequency_penalty=1,
 ):
     """
     Queries the Perplexity API with the provided parameters.
@@ -279,12 +279,12 @@ def textract_ocr(file_names: list) -> str:
 
 @tool
 def s3_object_storage(
-        operation: str,
-        bucket_name: Optional[str] = None,
-        file_path: Optional[str] = None,
-        object_name: Optional[str] = None,
-        prefix: Optional[str] = None,
-        region: Optional[str] = None,
+    operation: str,
+    bucket_name: Optional[str] = None,
+    file_path: Optional[str] = None,
+    object_name: Optional[str] = None,
+    prefix: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> Any:
     """
     Perform an S3 storage operation.
@@ -327,10 +327,10 @@ def s3_object_storage(
                 "Operation 'upload_file' requires 'file_path' and 'bucket_name'."
             )
         if (
-                operation == "download_file"
-                and not file_path
-                or not bucket_name
-                or not object_name
+            operation == "download_file"
+            and not file_path
+            or not bucket_name
+            or not object_name
         ):
             raise ValueError(
                 "Operation 'download_file' requires 'file_path', 'bucket_name', and 'object_name'."
@@ -394,15 +394,15 @@ def capture_image(save_path="captured_image.jpg"):
 
 @tool
 def weather_forecast(
-        operation: str,
-        lat: float,
-        lon: float,
-        units: str = "standard",
-        lang: str = "en",
-        exclude: Optional[List[str]] = None,
-        timestamp: Optional[int] = None,
-        date: Optional[str] = None,
-        timezone: Optional[str] = None,
+    operation: str,
+    lat: float,
+    lon: float,
+    units: str = "standard",
+    lang: str = "en",
+    exclude: Optional[List[str]] = None,
+    timestamp: Optional[int] = None,
+    date: Optional[str] = None,
+    timezone: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Get weather information from OpenWeather One Call API 3.0
@@ -555,6 +555,7 @@ def retrieve_user_personal_info(key):
         return personal_info.get(key, "Information not found.")
     else:
         return "No personal information file found."
+
 
 #
 # # New York City coordinates

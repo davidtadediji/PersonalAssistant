@@ -42,12 +42,12 @@ class OpenWeather:
             raise ValueError("Longitude must be between -180 and 180")
 
     def get_current_and_forecast(
-            self,
-            lat: float,
-            lon: float,
-            exclude: Optional[List[str]] = None,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        exclude: Optional[List[str]] = None,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours,
@@ -69,12 +69,12 @@ class OpenWeather:
         return response.json()
 
     def get_historical(
-            self,
-            lat: float,
-            lon: float,
-            timestamp: int,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        timestamp: int,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get historical weather data for a specific timestamp.
@@ -95,13 +95,13 @@ class OpenWeather:
         return response.json()
 
     def get_daily_aggregate(
-            self,
-            lat: float,
-            lon: float,
-            date: str,
-            timezone: Optional[str] = None,
-            units: str = "standard",
-            lang: str = "en",
+        self,
+        lat: float,
+        lon: float,
+        date: str,
+        timezone: Optional[str] = None,
+        units: str = "standard",
+        lang: str = "en",
     ) -> Dict[str, Any]:
         """
         Get daily aggregated weather data for a specific date.
@@ -124,11 +124,11 @@ class OpenWeather:
         return response.json()
 
     def get_weather_overview(
-            self,
-            lat: float,
-            lon: float,
-            date: Optional[str] = None,
-            units: str = "standard",
+        self,
+        lat: float,
+        lon: float,
+        date: Optional[str] = None,
+        units: str = "standard",
     ) -> Dict[str, Any]:
         """
         Get a weather overview with a human-readable summary for today or tomorrow's forecast.
@@ -219,15 +219,15 @@ class WeatherForecastQuery(BaseModel):
 
 
 def weather_forecast(
-        operation: str,
-        lat: float,
-        lon: float,
-        units: str = "standard",
-        lang: str = "en",
-        exclude: Optional[List[str]] = None,
-        timestamp: Optional[int] = None,
-        date: Optional[str] = None,
-        timezone: Optional[str] = None,
+    operation: str,
+    lat: float,
+    lon: float,
+    units: str = "standard",
+    lang: str = "en",
+    exclude: Optional[List[str]] = None,
+    timestamp: Optional[int] = None,
+    date: Optional[str] = None,
+    timezone: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Fetch weather information using OpenWeather One Call API 3.0.

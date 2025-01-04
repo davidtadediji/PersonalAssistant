@@ -14,7 +14,7 @@ from deepgram import (
     LiveTranscriptionEvents,
     LiveOptions,
     Microphone,
-    SpeakOptions
+    SpeakOptions,
 )
 from dotenv import load_dotenv
 from langchain.chains import LLMChain
@@ -45,27 +45,33 @@ class AudioPlayback:
 
 class LanguageModelProcessor:
     def __init__(self):
-        self.llm = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768", groq_api_key=os.getenv("GROQ_API_KEY"))
-        self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+        self.llm = ChatGroq(
+            temperature=0,
+            model_name="mixtral-8x7b-32768",
+            groq_api_key=os.getenv("GROQ_API_KEY"),
+        )
+        self.memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
 
         # Pre-compiled system message
         self.system_prompt = "You are a conversational assistant named Eliza. Use short, conversational responses as if you're having a live conversation. Your response should be under 20 words. Do not respond with any code, only conversation"
 
-        self.prompt = ChatPromptTemplate.from_messages([
-            SystemMessagePromptTemplate.from_template(self.system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            HumanMessagePromptTemplate.from_template("{text}")
-        ])
+        self.prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessagePromptTemplate.from_template(self.system_prompt),
+                MessagesPlaceholder(variable_name="chat_history"),
+                HumanMessagePromptTemplate.from_template("{text}"),
+            ]
+        )
 
         self.conversation = LLMChain(
-            llm=self.llm,
-            prompt=self.prompt,
-            memory=self.memory
+            llm=self.llm, prompt=self.prompt, memory=self.memory
         )
 
     def process(self, text):
         response = self.conversation.invoke({"text": text})
-        return response['text']
+        return response["text"]
 
 
 class ConversationManager:
@@ -79,8 +85,7 @@ class ConversationManager:
 
         config = DeepgramClientOptions(options={"keepalive": "true"})
         self.deepgram = DeepgramClient(
-            api_key=os.getenv("DEEPGRAM_API_KEY"),
-            config=config
+            api_key=os.getenv("DEEPGRAM_API_KEY"), config=config
         )
 
     def play_audio(self, audio):
@@ -93,7 +98,7 @@ class ConversationManager:
                 audio.raw_data,
                 num_channels=audio.channels,
                 bytes_per_sample=audio.sample_width,
-                sample_rate=audio.frame_rate
+                sample_rate=audio.frame_rate,
             )
 
             playback_latency = int((time.time() - start_time) * 1000)
@@ -111,17 +116,12 @@ class ConversationManager:
             start_time = time.time()
 
             options = SpeakOptions(
-                model="aura-asteria-en",
-                encoding="linear16",
-                container="wav"
+                model="aura-asteria-en", encoding="linear16", container="wav"
             )
 
             filename = "../output.wav"
             audio_future = self.thread_pool.submit(
-                self.deepgram.speak.v("1").save,
-                filename,
-                {"text": text},
-                options
+                self.deepgram.speak.v("1").save, filename, {"text": text}, options
             )
 
             await asyncio.wrap_future(audio_future)
