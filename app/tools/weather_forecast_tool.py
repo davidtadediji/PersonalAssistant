@@ -1,21 +1,12 @@
+import os
 from enum import Enum
-
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-
-class Units(Enum):
-    STANDARD = "standard"  # Kelvin, m/s
-    METRIC = "metric"  # Celsius, m/s
-    IMPERIAL = "imperial"  # Fahrenheit, mph
-
-
-from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 import requests
 from dotenv import load_dotenv
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field, validator, Any
+
+from app.logger import configured_logger
 
 # Load environment variables
 load_dotenv()
@@ -33,129 +24,145 @@ class OpenWeather:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.base_url = os.getenv("OPENWEATHER_API_URL")
+        configured_logger.info(f"OpenWeather client initialized with API URL: {self.base_url}")
 
     def _validate_coordinates(self, lat: float, lon: float) -> None:
         """Validate latitude and longitude values."""
+        configured_logger.info(f"Validating coordinates: lat={lat}, lon={lon}")
         if not (-90 <= lat <= 90):
+            configured_logger.error("Latitude must be between -90 and 90")
             raise ValueError("Latitude must be between -90 and 90")
         if not (-180 <= lon <= 180):
+            configured_logger.error("Longitude must be between -180 and 180")
             raise ValueError("Longitude must be between -180 and 180")
 
-    def get_current_and_forecast(
-        self,
-        lat: float,
-        lon: float,
-        exclude: Optional[List[str]] = None,
-        units: str = "standard",
-        lang: str = "en",
-    ) -> Dict[str, Any]:
-        """
-        Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours,
-        daily forecast for 8 days, and government weather alerts.
-        """
-        self._validate_coordinates(lat, lon)
-        query_params = {
-            "lat": lat,
-            "lon": lon,
-            "appid": self.api_key,
-            "units": units,
-            "lang": lang,
-        }
-        if exclude:
-            query_params["exclude"] = ",".join(exclude)
-        print(query_params)
-        response = requests.get(self.base_url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+    def get_current_and_forecast(self, lat: float, lon: float, exclude: Optional[List[str]] = None,
+                                 units: str = "standard", lang: str = "en") -> Dict[str, Any]:
+        """Get current weather, minute forecast for 1 hour, hourly forecast for 48 hours, daily forecast for 8 days, and government weather alerts."""
+        try:
+            self._validate_coordinates(lat, lon)
+            query_params = {
+                "lat": lat,
+                "lon": lon,
+                "appid": self.api_key,
+                "units": units,
+                "lang": lang,
+            }
+            if exclude:
+                query_params["exclude"] = ",".join(exclude)
+            configured_logger.info(f"Making request with params: {query_params}")
+            response = requests.get(self.base_url, params=query_params)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            configured_logger.error(f"Error fetching current and forecast data: {str(e)}")
+            raise
 
-    def get_historical(
-        self,
-        lat: float,
-        lon: float,
-        timestamp: int,
-        units: str = "standard",
-        lang: str = "en",
-    ) -> Dict[str, Any]:
-        """
-        Get historical weather data for a specific timestamp.
-        Data is available from January 1st, 1979, till 4 days ahead.
-        """
-        self._validate_coordinates(lat, lon)
-        url = f"{self.base_url}/timemachine"
-        query_params = {
-            "lat": lat,
-            "lon": lon,
-            "dt": timestamp,
-            "appid": self.api_key,
-            "units": units,
-            "lang": lang,
-        }
-        response = requests.get(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+    def get_historical(self, lat: float, lon: float, timestamp: int, units: str = "standard", lang: str = "en") -> Dict[
+        str, Any]:
+        """Get historical weather data for a specific timestamp."""
+        try:
+            self._validate_coordinates(lat, lon)
+            url = f"{self.base_url}/timemachine"
+            query_params = {
+                "lat": lat,
+                "lon": lon,
+                "dt": timestamp,
+                "appid": self.api_key,
+                "units": units,
+                "lang": lang,
+            }
+            configured_logger.info(f"Making request to {url} with params: {query_params}")
+            response = requests.get(url, params=query_params)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            configured_logger.error(f"Error fetching historical data: {str(e)}")
+            raise
 
-    def get_daily_aggregate(
-        self,
-        lat: float,
-        lon: float,
-        date: str,
-        timezone: Optional[str] = None,
-        units: str = "standard",
-        lang: str = "en",
-    ) -> Dict[str, Any]:
-        """
-        Get daily aggregated weather data for a specific date.
-        Data is available from January 2nd, 1979, till 1.5 years ahead.
-        """
-        self._validate_coordinates(lat, lon)
-        url = f"{self.base_url}/day_summary"
-        query_params = {
-            "lat": lat,
-            "lon": lon,
-            "date": date,
-            "appid": self.api_key,
-            "units": units,
-            "lang": lang,
-        }
-        if timezone:
-            query_params["tz"] = timezone
-        response = requests.get(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+    def get_daily_aggregate(self, lat: float, lon: float, date: str, timezone: Optional[str] = None,
+                            units: str = "standard", lang: str = "en") -> Dict[str, Any]:
+        """Get daily aggregated weather data for a specific date."""
+        try:
+            self._validate_coordinates(lat, lon)
+            url = f"{self.base_url}/day_summary"
+            query_params = {
+                "lat": lat,
+                "lon": lon,
+                "date": date,
+                "appid": self.api_key,
+                "units": units,
+                "lang": lang,
+            }
+            if timezone:
+                query_params["tz"] = timezone
+            configured_logger.info(f"Making request to {url} with params: {query_params}")
+            response = requests.get(url, params=query_params)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            configured_logger.error(f"Error fetching daily aggregate data: {str(e)}")
+            raise
 
-    def get_weather_overview(
-        self,
-        lat: float,
-        lon: float,
-        date: Optional[str] = None,
-        units: str = "standard",
-    ) -> Dict[str, Any]:
-        """
-        Get a weather overview with a human-readable summary for today or tomorrow's forecast.
-        """
-        self._validate_coordinates(lat, lon)
-        url = f"{self.base_url}/overview"
-        query_params = {
-            "lat": lat,
-            "lon": lon,
-            "appid": self.api_key,
-            "units": units,
-        }
-        if date:
-            query_params["date"] = date
-        response = requests.get(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+    def get_weather_overview(self, lat: float, lon: float, date: Optional[str] = None, units: str = "standard") -> Dict[
+        str, Any]:
+        """Get a weather overview with a human-readable summary for today or tomorrow's forecast."""
+        try:
+            self._validate_coordinates(lat, lon)
+            url = f"{self.base_url}/overview"
+            query_params = {
+                "lat": lat,
+                "lon": lon,
+                "appid": self.api_key,
+                "units": units,
+            }
+            if date:
+                query_params["date"] = date
+            configured_logger.info(f"Making request to {url} with params: {query_params}")
+            response = requests.get(url, params=query_params)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            configured_logger.error(f"Error fetching weather overview: {str(e)}")
+            raise
 
 
-from typing import Optional, List, Dict
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field, validator
-import os
-from dotenv import load_dotenv
+# Example for logging in weather_forecast function
 
-# Load environment variables
-load_dotenv()
+def weather_forecast(operation: str, lat: float, lon: float, units: str = "standard", lang: str = "en",
+                     exclude: Optional[List[str]] = None, timestamp: Optional[int] = None, date: Optional[str] = None,
+                     timezone: Optional[str] = None) -> Dict[str, Any]:
+    """Fetch weather information using OpenWeather One Call API 3.0."""
+    try:
+        configured_logger.info(
+            f"Fetching weather forecast for operation={operation}, lat={lat}, lon={lon}, units={units}, lang={lang}")
+        # Ensure lat and lon are floats
+        lat = float(lat)
+        lon = float(lon)
+
+        client = OpenWeather(os.getenv("OPENWEATHER_API_KEY"))
+
+        # Ensure timestamp is None if not provided or invalid
+        if timestamp == "None" or timestamp == "":
+            timestamp = None
+
+        if operation == "current_forecast":
+            return client.get_current_and_forecast(lat, lon, exclude, units, lang)
+        elif operation == "historical":
+            if timestamp is None:
+                raise ValueError("Timestamp is required for historical operation")
+            return client.get_historical(lat, lon, timestamp, units, lang)
+        elif operation == "daily_aggregate":
+            if date is None:
+                raise ValueError("Date is required for daily_aggregate operation")
+            return client.get_daily_aggregate(lat, lon, date, timezone, units, lang)
+        elif operation == "overview":
+            return client.get_weather_overview(lat, lon, date, units)
+        else:
+            raise ValueError(f"Unknown operation: {operation}")
+    except Exception as e:
+        configured_logger.error(f"Error during weather forecast operation: {str(e)}")
+        raise
 
 
 class WeatherForecastQuery(BaseModel):
@@ -216,64 +223,6 @@ class WeatherForecastQuery(BaseModel):
         if v not in valid_operations:
             raise ValueError(f"Invalid operation. Must be one of: {valid_operations}")
         return v
-
-
-def weather_forecast(
-    operation: str,
-    lat: float,
-    lon: float,
-    units: str = "standard",
-    lang: str = "en",
-    exclude: Optional[List[str]] = None,
-    timestamp: Optional[int] = None,
-    date: Optional[str] = None,
-    timezone: Optional[str] = None,
-) -> Dict[str, Any]:
-    """
-    Fetch weather information using OpenWeather One Call API 3.0.
-
-    Args:
-        operation (str): Type of weather data to retrieve.
-        lat (float): Latitude of the location.
-        lon (float): Longitude of the location.
-        units (str): Units of measurement.
-        lang (str): Language code for descriptions.
-        exclude (List[str]): List of data blocks to exclude.
-        timestamp (int): Unix timestamp for historical data.
-        date (str): Date in 'YYYY-MM-DD' format.
-        timezone (str): Timezone in ±HH:MM format.
-
-    Returns:
-        Dict[str, Any]: Weather data based on the operation.
-    """
-    # Ensure lat and lon are floats
-    try:
-        lat = float(lat)
-        lon = float(lon)
-    except (ValueError, TypeError):
-        raise ValueError("Latitude and longitude must be valid numbers.")
-
-    client = OpenWeather(os.getenv("OPENWEATHER_API_KEY"))
-
-    # Ensure timestamp is None if not provided or invalid
-    if timestamp == "None" or timestamp == "":
-        timestamp = None
-
-    if operation == "current_forecast":
-        # Exclude timestamp for current_forecast
-        return client.get_current_and_forecast(lat, lon, exclude, units, lang)
-    elif operation == "historical":
-        if timestamp is None:
-            raise ValueError("Timestamp is required for historical operation")
-        return client.get_historical(lat, lon, timestamp, units, lang)
-    elif operation == "daily_aggregate":
-        if date is None:
-            raise ValueError("Date is required for daily_aggregate operation")
-        return client.get_daily_aggregate(lat, lon, date, timezone, units, lang)
-    elif operation == "overview":
-        return client.get_weather_overview(lat, lon, date, units)
-    else:
-        raise ValueError(f"Unknown operation: {operation}")
 
 
 def get_weather_forecast_tool() -> StructuredTool:

@@ -1,5 +1,4 @@
 from typing import List
-
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel

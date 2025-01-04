@@ -1,8 +1,28 @@
 import sqlite3
+from pathlib import Path
 from typing import List, Dict, Optional, Any
-
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+from app.logger import configured_logger
+
+def get_resource_path(resource_name: str) -> Path:
+    """
+    Get the path to a resource file in the 'resources' directory.
+
+    Args:
+        resource_name (str): The name of the resource file (e.g., 'test_database.db').
+
+    Returns:
+        Path: The full path to the resource file.
+    """
+    project_root = Path(__file__).resolve().parent
+    resources_dir = project_root / "../../resources"
+
+    # Ensure the resources directory exists
+    resources_dir.mkdir(parents=True, exist_ok=True)
+
+    # Return the full path to the requested resource
+    return resources_dir / resource_name
 
 
 class SQLDatabaseQuery(BaseModel):
@@ -16,13 +36,13 @@ class SQLDatabaseQuery(BaseModel):
 
 
 def sql_database(
-    operation,
-    db_name,
-    table_name=None,
-    data=None,
-    columns=None,
-    condition=None,
-    query=None,
+        operation,
+        db_name,
+        table_name=None,
+        data=None,
+        columns=None,
+        condition=None,
+        query=None,
 ):
     """
     Perform CRUD operations and custom queries on the database.
@@ -42,7 +62,9 @@ def sql_database(
     """
     connection = None
     try:
-        connection = sqlite3.connect(db_name)
+        configured_logger.info(f"Attempting operation '{operation}' on database '{db_name}'")
+        db_path = get_resource_path(db_name)  # Get the full path to the database
+        connection = sqlite3.connect(db_path)
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
 
@@ -54,11 +76,13 @@ def sql_database(
             )
             cursor.execute(sql_query, tuple(data.values()))
             connection.commit()
+            configured_logger.info(f"Data inserted into '{table_name}' successfully.")
             return {"status": "success", "message": "Data inserted successfully"}
 
         elif operation == "read" and query:
             cursor.execute(query)
             results = cursor.fetchall()
+            configured_logger.info(f"Data read successfully from the database.")
             return [dict(row) for row in results] if results else []
 
         elif operation == "update" and data and table_name and condition:
@@ -66,12 +90,14 @@ def sql_database(
             sql_query = f"UPDATE {table_name} SET {set_clause} WHERE {condition}"
             cursor.execute(sql_query, tuple(data.values()))
             connection.commit()
+            configured_logger.info(f"Data in '{table_name}' updated successfully.")
             return {"status": "success", "message": "Data updated successfully"}
 
         elif operation == "delete" and table_name and condition:
             sql_query = f"DELETE FROM {table_name} WHERE {condition}"
             cursor.execute(sql_query)
             connection.commit()
+            configured_logger.info(f"Data from '{table_name}' deleted successfully.")
             return {"status": "success", "message": "Data deleted successfully"}
 
         elif operation == "execute" and query:
@@ -80,17 +106,23 @@ def sql_database(
                 connection.commit()
             if query.strip().lower().startswith("select"):
                 results = cursor.fetchall()
+                configured_logger.info(f"Custom query executed successfully.")
                 return [dict(row) for row in results] if results else []
 
         else:
-            raise ValueError("Invalid parameters or operation")
+            error_message = "Invalid parameters or operation"
+            configured_logger.error(error_message)
+            raise ValueError(error_message)
 
     except sqlite3.Error as e:
-        raise Exception(f"Database operation failed -> {e}") from e
+        error_message = f"Database operation failed -> {e}"
+        configured_logger.error(error_message)
+        raise Exception(error_message) from e
 
     finally:
         if connection:
             connection.close()
+            configured_logger.info("Database connection closed.")
 
 
 def sql_database_tool() -> StructuredTool:
@@ -126,3 +158,62 @@ def sql_database_tool() -> StructuredTool:
         ),
         input_schema=SQLDatabaseQuery,
     )
+
+
+def test_sql_database():
+    # Define sample data for testing
+    db_name = "test_database.db"
+    table_name = "test_table"
+
+    # Create a table (for testing)
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name} (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        age INTEGER NOT NULL
+    );
+    """
+
+    # Create a sample data for insertion
+    sample_data = {
+        "name": "John Doe",
+        "age": 30
+    }
+
+    # Define columns for the insert
+    columns = ["name", "age"]
+
+    try:
+        # Step 1: Create a test table (execute query)
+        result = sql_database(
+            operation="execute",
+            db_name=db_name,
+            query=create_table_query
+        )
+        print("Table created:", result)
+
+        # Step 2: Insert sample data (create operation)
+        result = sql_database(
+            operation="create",
+            db_name=db_name,
+            table_name=table_name,
+            data=sample_data,
+            columns=columns
+        )
+        print("Data inserted:", result)
+
+        # Step 3: Read the inserted data (read operation)
+        read_query = f"SELECT * FROM {table_name} WHERE name='John Doe';"
+        result = sql_database(
+            operation="read",
+            db_name=db_name,
+            query=read_query
+        )
+        print("Read data:", result)
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
+
+# Call the test function
+test_sql_database()

@@ -1,10 +1,10 @@
 import os
 from typing import Dict
-
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from openai import OpenAI
 from pydantic import BaseModel, Field
+from app.logger import configured_logger
 
 load_dotenv()
 # Initialize the OpenAI client
@@ -25,6 +25,9 @@ def image_url_interpreter(url: str) -> Dict:
         dict: The result from the OpenAI API containing the interpretation of the image.
     """
     try:
+        # Log the incoming request to interpret the image
+        configured_logger.info(f"Request received to interpret image from URL: {url}")
+
         # Send the image URL to the OpenAI API for interpretation
         response = client.chat.completions.create(
             model=os.getenv("EXECUTION_MODEL"),
@@ -46,6 +49,9 @@ def image_url_interpreter(url: str) -> Dict:
             max_tokens=300,
         )
 
+        # Log successful interpretation
+        configured_logger.info(f"Successfully interpreted image from URL: {url}")
+
         # Extract the content from the response and return it
         return {
             "success": True,
@@ -54,6 +60,8 @@ def image_url_interpreter(url: str) -> Dict:
         }
 
     except Exception as e:
+        # Log the error that occurred
+        configured_logger.error(f"Error occurred while interpreting image from URL: {url}. Error: {str(e)}")
         return {"error": f"An error occurred: {str(e)}"}
 
 

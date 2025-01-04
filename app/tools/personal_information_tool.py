@@ -1,9 +1,9 @@
 import json
 import os
 from typing import Any
-
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+from app.logger import configured_logger
 
 
 def store_user_personal_info(key, value):
@@ -29,29 +29,39 @@ def store_user_personal_info(key, value):
     # Check if the directory exists, if not, create it
     if not os.path.exists(directory):
         os.makedirs(directory)
+        configured_logger.info(f"Created directory: {directory}")
 
     # Check if the file exists
     if os.path.exists(filename):
         # Load existing personal information from the file
         with open(filename, "r") as file:
             personal_info = json.load(file)
+            configured_logger.info(f"Loaded existing personal info from {filename}.")
     else:
         # If the file doesn't exist, create an empty dictionary
         personal_info = {}
+        configured_logger.info(f"File {filename} not found, starting with an empty dictionary.")
 
     # Check if the key already exists
     if key in personal_info:
         # Update the value if the key exists
         personal_info[key] = value
         result = f"Updated {key} to {value}."
+        configured_logger.info(f"Updated {key} with new value: {value}")
     else:
         # Add the new key-value pair
         personal_info[key] = value
         result = f"Added {key}: {value}."
+        configured_logger.info(f"Added new key-value pair: {key} -> {value}")
 
     # Save the updated personal information back to the file
-    with open(filename, "w") as file:
-        json.dump(personal_info, file, indent=4)
+    try:
+        with open(filename, "w") as file:
+            json.dump(personal_info, file, indent=4)
+            configured_logger.info(f"Successfully saved updated personal information to {filename}.")
+    except Exception as e:
+        configured_logger.error(f"Failed to save personal information: {e}")
+        result = f"Error: Failed to save personal information - {e}"
 
     return result
 
@@ -71,7 +81,9 @@ def get_available_user_personal_information_keys():
         with open(filename, "r") as file:
             personal_info = json.load(file)
 
+        configured_logger.info(f"Retrieved available keys from {filename}: {list(personal_info.keys())}")
         return list(personal_info.keys())  # Return the keys as a list
+    configured_logger.warn(f"Personal information file {filename} not found.")
     return []  # Return an empty list if the file doesn't exist
 
 
@@ -93,8 +105,14 @@ def retrieve_user_personal_info(key):
         with open(filename, "r") as file:
             personal_info = json.load(file)
 
-        return personal_info.get(key, "Information not found.")
+        value = personal_info.get(key, "Information not found.")
+        if value == "Information not found.":
+            configured_logger.warn(f"Key '{key}' not found in the personal information file.")
+        else:
+            configured_logger.info(f"Retrieved value for key '{key}': {value}")
+        return value
     else:
+        configured_logger.error(f"File {filename} not found.")
         return "No personal information file found."
 
 

@@ -1,9 +1,9 @@
 from typing import Optional
-
 import cv2
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+from app.logger import configured_logger  # Assuming the logger is imported
 
 load_dotenv()
 
@@ -22,24 +22,26 @@ def capture_image(save_path="captured_image.jpg"):
     Returns:
         str: The file path of the saved image.
     """
+    configured_logger.info(f"Starting image capture. Saving to: {save_path}")
+
     # Initialize the webcam (0 is usually the default camera)
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        print("Error: Could not open camera.")
+        configured_logger.error("Error: Could not open camera.")
         return None
 
     # Capture a single frame
     ret, frame = cap.read()
 
     if not ret:
-        print("Error: Failed to capture image.")
+        configured_logger.error("Error: Failed to capture image.")
         cap.release()
         return None
 
     # Save the captured image to the specified path
     cv2.imwrite(save_path, frame)
-    print(f"Image captured and saved to {save_path}")
+    configured_logger.info(f"Image captured and saved to {save_path}")
 
     # Release the camera and close any OpenCV windows
     cap.release()

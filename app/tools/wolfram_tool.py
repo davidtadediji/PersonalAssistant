@@ -1,9 +1,9 @@
 import os
-
 import requests
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
+from app.logger import configured_logger  # Assuming the logger is imported here
 
 # Load environment variables
 load_dotenv()
@@ -30,26 +30,39 @@ def wolfram_alpha_computing(query: str, max_chars: int = 800) -> str:
         str: The raw response from the Wolfram Alpha API or an error message with guidance.
     """
     try:
-        print(query)
+        # Log the incoming query
+        configured_logger.info(f"Query received: {query}")
+
         # Retrieve the app_id from the environment variable
         app_id = os.getenv("WOLFRAM_ALPHA_APP_ID")  # Default to "DEMO" if not set
 
         if not query:
-            return "Error: No query provided. Please provide a valid query to proceed."
+            error_message = "Error: No query provided. Please provide a valid query to proceed."
+            configured_logger.error(error_message)
+            return error_message
 
         base_url = "http://api.wolframalpha.com/v1/result"  # Short Answer API URL
         params = {"input": query, "appid": app_id, "maxchars": max_chars}
+
+        # Log the API request parameters
+        configured_logger.info(f"Sending request to Wolfram Alpha with params: {params}")
 
         response = requests.get(base_url, params=params)
 
         response.raise_for_status()  # Raise HTTPError for bad responses
 
         if response.status_code == 200:
+            configured_logger.info("Wolfram Alpha response successfully received.")
             return response.text
         else:
-            raise Exception(f"Error: {response.status_code} - {response.text}")
+            error_message = f"Error: {response.status_code} - {response.text}"
+            configured_logger.error(error_message)
+            raise Exception(error_message)
+
     except requests.exceptions.RequestException as e:
-        return f"Error occurred during Wolfram Alpha API call -> {e}"
+        error_message = f"Error occurred during Wolfram Alpha API call -> {e}"
+        configured_logger.error(error_message)
+        return error_message
 
 
 # Define the structured tool

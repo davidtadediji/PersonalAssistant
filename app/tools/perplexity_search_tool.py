@@ -1,9 +1,9 @@
 import os
 from typing import Optional, List
-
 import requests
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
+from app.logger import configured_logger
 
 
 class PerplexitySearchQuery(BaseModel):
@@ -41,18 +41,18 @@ class PerplexitySearchQuery(BaseModel):
 
 
 def perplexity_search(
-    query,
-    model="llama-3.1-sonar-small-128k-online",
-    max_tokens=None,
-    temperature=0.2,
-    top_p=0.9,
-    search_domain_filter=None,
-    return_images=False,
-    return_related_questions=False,
-    search_recency_filter="month",
-    top_k=0,
-    presence_penalty=0,
-    frequency_penalty=1,
+        query,
+        model="llama-3.1-sonar-small-128k-online",
+        max_tokens=None,
+        temperature=0.2,
+        top_p=0.9,
+        search_domain_filter=None,
+        return_images=False,
+        return_related_questions=False,
+        search_recency_filter="month",
+        top_k=0,
+        presence_penalty=0,
+        frequency_penalty=1,
 ):
     """
     Queries the Perplexity API with the provided parameters.
@@ -75,11 +75,13 @@ def perplexity_search(
         dict: The API response as a JSON object.
     """
     if not query:
+        configured_logger.error("Query cannot be empty.")
         return {"error": "Query cannot be empty."}
 
     token = os.getenv("PERPLEXITY_TOKEN")
 
     if not token:
+        configured_logger.error("API token is required.")
         return {"error": "API token is required."}
 
     url = os.getenv("PERPLEXITY_API_URL")
@@ -105,10 +107,13 @@ def perplexity_search(
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
     try:
+        configured_logger.info(f"Querying Perplexity API with query: {query}")
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
+        configured_logger.info(f"API response received successfully for query: {query}")
         return response.json()
     except requests.RequestException as e:
+        configured_logger.error(f"Error occurred while querying Perplexity API: {str(e)}")
         return {"error": str(e)}
 
 

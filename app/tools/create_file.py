@@ -1,8 +1,8 @@
 from typing import List, Dict, Any
-
 from fpdf import FPDF
 from langchain.tools import StructuredTool
 from pydantic import BaseModel
+from app.logger import configured_logger  # Assuming the logger is imported
 
 
 class CreateFileInput(BaseModel):
@@ -29,36 +29,46 @@ def create_file(filename: str, file_type: str, content: List[Dict[str, Any]]) ->
     Returns:
         str: The path to the created file.
     """
-    if file_type.lower() == "pdf":
-        pdf = FPDF()
-        pdf.set_auto_page_break(auto=True, margin=15)
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
+    configured_logger.info(f"Starting file creation: {filename} with type {file_type}.")
 
-        for section in content:
-            text = section.get("text", "")
-            size = section.get("size", 12)
-            align = section.get("align", "L")
-            new_line = section.get("new_line", True)
+    try:
+        if file_type.lower() == "pdf":
+            pdf = FPDF()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
 
-            pdf.set_font_size(size)
-            pdf.multi_cell(0, 10, txt=text, align=align)
-
-            if new_line:
-                pdf.ln()
-
-        pdf.output(filename)
-        return f"PDF created successfully at: {filename}"
-
-    elif file_type.lower() == "txt":
-        with open(filename, "w") as file:
             for section in content:
                 text = section.get("text", "")
-                file.write(text + "\n")
-        return f"Text file created successfully at: {filename}"
+                size = section.get("size", 12)
+                align = section.get("align", "L")
+                new_line = section.get("new_line", True)
 
-    else:
-        raise ValueError(f"Unsupported file type: {file_type}")
+                pdf.set_font_size(size)
+                pdf.multi_cell(0, 10, txt=text, align=align)
+
+                if new_line:
+                    pdf.ln()
+
+            pdf.output(filename)
+            configured_logger.info(f"PDF file created successfully at: {filename}")
+            return f"PDF created successfully at: {filename}"
+
+        elif file_type.lower() == "txt":
+            with open(filename, "w") as file:
+                for section in content:
+                    text = section.get("text", "")
+                    file.write(text + "\n")
+            configured_logger.info(f"Text file created successfully at: {filename}")
+            return f"Text file created successfully at: {filename}"
+
+        else:
+            configured_logger.error(f"Unsupported file type: {file_type}")
+            raise ValueError(f"Unsupported file type: {file_type}")
+
+    except Exception as e:
+        configured_logger.error(f"Error occurred while creating file {filename}: {str(e)}")
+        return {"error": f"An error occurred: {str(e)}"}
 
 
 def get_create_file_tool():
@@ -82,3 +92,38 @@ def get_create_file_tool():
         ),
         input_schema=CreateFileInput,
     )
+
+
+import os
+from pathlib import Path
+
+
+def test_create_file():
+    # Sample data for testing
+    content = [
+        {"text": "Hello, this is a test text.", "size": 12, "align": "L", "new_line": True},
+        {"text": "This is another line in the PDF.", "size": 14, "align": "C", "new_line": True},
+    ]
+
+    # Test PDF creation
+    pdf_filename = "test_output.pdf"
+    pdf_result = create_file(pdf_filename, "pdf", content)
+    assert pdf_result == f"PDF created successfully at: {pdf_filename}", "PDF creation failed"
+    assert Path(pdf_filename).exists(), "PDF file does not exist"
+    print(f"Test passed for PDF: {pdf_result}")
+
+    # Test Text file creation
+    txt_filename = "test_output.txt"
+    txt_result = create_file(txt_filename, "txt", content)
+    assert txt_result == f"Text file created successfully at: {txt_filename}", "Text file creation failed"
+    assert Path(txt_filename).exists(), "Text file does not exist"
+    print(f"Test passed for Text file: {txt_result}")
+
+    # Cleanup: Remove created test files
+    os.remove(pdf_filename)
+    os.remove(txt_filename)
+    print("Test files cleaned up.")
+
+
+# Run the test
+test_create_file()
