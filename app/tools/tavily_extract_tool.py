@@ -111,4 +111,4 @@ def test_tavily_extract_tool():
         configured_logger.error(f"Error during extraction: {e}")
 
 
-test_tavily_extract_tool()
+# test_tavily_extract_tool()

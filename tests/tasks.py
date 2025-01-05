@@ -10,6 +10,14 @@ def save_response(response):
         f.write(f"{timestamp}\n{response}\n---\n")
 
 # Stream and save responses
+for step in chain.stream(
+        {"messages": [HumanMessage(content="What is my current location, find the temperature and get the distance "
+                                           "it and new york, and store the distance for me as next trip, store that I love hiking, find the temperature for tokyo")]}):
+    response = str(step)
+    save_response(response)
+
+
+# Stream and save responses
 # for step in chain.stream(
 #         {"messages": [HumanMessage(content="Calculate bmi for 200pounds at 5'11")]}):
 #     response = str(step)
