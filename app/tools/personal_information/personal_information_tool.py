@@ -126,8 +126,8 @@ def get_store_user_personal_info_tool():
         name="store_user_personal_info",
         func=store_user_personal_info,
         description=(
-            "store_user_personal_info(key, value) -> str:\n"
             " - Stores personal information by adding or updating key-value pairs in a JSON file.\n"
+            "store_user_personal_info(key, value) -> str:\n"
         ),
         input_schema=StoreUserPersonalInfoQuery,
     )
@@ -154,8 +154,8 @@ def get_retrieve_user_personal_info_tool():
         name="retrieve_user_personal_info",
         func=retrieve_user_personal_info,
         description=(
-            "retrieve_user_personal_info(key) -> str:\n"
             " - Retrieves personal information based on the provided key from the JSON file.\n"
+            "retrieve_user_personal_info(key) -> str:\n"
         ),
         input_schema=RetrieveUserPersonalInfoQuery,
     )

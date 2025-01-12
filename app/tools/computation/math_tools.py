@@ -12,25 +12,13 @@ from pydantic import BaseModel, Field
 
 _MATH_DESCRIPTION = (
     "math(problem: str, context: Optional[list[str]]) -> float:\n"
-    " - Solves the provided math problem.\n"
-    ' - `problem` can be either a simple math problem (e.g. "1 + 3") or a word problem (e.g. "how many apples are there if there are 3 apples and 2 apples").\n'
-    " - You cannot calculate multiple expressions in one call. For instance, `math('1 + 3, 2 + 4')` does not work. "
-    "If you need to calculate multiple expressions, you need to call them separately like `math('1 + 3')` and then `math('2 + 4')`\n"
-    " - Minimize the number of `math` actions as much as possible. For instance, instead of calling "
-    '2. math("what is the 10% of $1") and then call 3. math("$1 + $2"), '
-    'you MUST call 2. math("what is the 110% of $1") instead, which will reduce the number of math actions.\n'
-    # Context specific rules below
-    " - You can optionally provide a list of strings as `context` to help the agent solve the problem. "
-    "If there are multiple contexts you need to answer the question, you can provide them as a list of strings.\n"
-    " - `math` action will not see the output of the previous actions unless you provide it as `context`. "
-    "You MUST provide the output of the previous actions as `context` if you need to do math on it.\n"
-    " - You MUST NEVER provide `search` type action's outputs as a variable in the `problem` argument. "
-    "This is because `search` returns a text blob that contains the information about the entity, not a number or value. "
-    "Therefore, when you need to provide an output of `search` action, you MUST provide it as a `context` argument to `math` action. "
-    'For example, 1. search("Barack Obama") and then 2. math("age of $1") is NEVER allowed. '
-    'Use 2. math("age of Barack Obama", context=["$1"]) instead.\n'
-    " - When you ask a question about `context`, specify the units. "
-    'For instance, "what is xx in height?" or "what is xx in millions?" instead of "what is xx?"\n'
+    " - Solves math problems: accepts simple calculations ('1 + 3') or word problems ('how many apples if 3 plus 2').\n"
+    " - Multiple expressions per call not allowed (e.g., 'math(1 + 3, 2 + 4)'). Call separately: math('1 + 3') then math('2 + 4').\n"
+    " - Minimize math actions: Instead of math('10% of $1') + math('$1 + $2'), use math('110% of $1').\n"
+    " - Optional context parameter accepts string list to aid problem-solving.\n"
+    " - Math action can't see previous outputs unless provided in context. Always include needed previous outputs as context.\n"
+    " - Never use search action outputs as problem variables - search returns text, not values. Instead, provide search results in context argument. Example: Instead of search('Barack Obama') then math('age of $1'), use math('age of Barack Obama', context=['$1']).\n"
+    " - When querying context, always specify units (e.g., 'what is xx in height?' not 'what is xx?').\n"
 )
 
 _SYSTEM_PROMPT = """Translate a math problem into a expression that can be executed using Python's numexpr library. Use the output of running this code to answer the question.

@@ -1,11 +1,11 @@
 import os
 from enum import Enum
+from typing import Any
 from typing import Optional, List, Dict
+
 import requests
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field, validator
-from typing import  Any
 
 from app.logger import configured_logger
 
@@ -149,6 +149,7 @@ def weather_forecast(operation: str, lat: float, lon: float, units: str = "stand
 
         if operation == "current_forecast":
             return client.get_current_and_forecast(lat, lon, exclude, units, lang)
+
         elif operation == "historical":
             if timestamp is None:
                 raise ValueError("Timestamp is required for historical operation")
@@ -166,8 +167,15 @@ def weather_forecast(operation: str, lat: float, lon: float, units: str = "stand
         raise
 
 
+from pydantic import BaseModel, Field
+from typing import List, Optional
+from typing_extensions import Literal  # Literal is available through typing_extensions in older Python versions
+
+
 class WeatherForecastQuery(BaseModel):
-    operation: str = Field(
+    operation: Literal[
+        'current_forecast', 'historical', 'daily_aggregate', 'overview'
+    ] = Field(
         ...,
         description=(
             "Specifies the type of weather data to retrieve. "
@@ -178,25 +186,26 @@ class WeatherForecastQuery(BaseModel):
         ..., ge=-90, le=90, description="Latitude of the location (range: -90 to 90)."
     )
     lon: float = Field(
-        ...,
-        ge=-180,
-        le=180,
-        description="Longitude of the location (range: -180 to 180).",
+        ..., ge=-180, le=180, description="Longitude of the location (range: -180 to 180)."
     )
     units: Optional[str] = Field(
         "standard",
         description=(
             "Units of measurement. Options: "
-            "'standard' (default), 'metric' (Celsius, m/s), 'imperial' (Fahrenheit, mph)."
+            "'standard' (Kelvin, m/s), 'metric' (Celsius, m/s), 'imperial' (Fahrenheit, mph)."
         ),
     )
     lang: Optional[str] = Field(
         "en",
         description="Language code for descriptions (e.g., 'en', 'es', 'fr'). Default is 'en'.",
     )
-    exclude: Optional[List[str]] = Field(
+    exclude: Optional[List[Literal['current', 'minutely', 'hourly', 'daily', 'alerts']]] = Field(
         None,
-        description="List of data blocks to exclude for 'current_forecast' (e.g., ['minutely', 'alerts']).",
+        description=(
+            "List of data blocks to exclude from the API response. "
+            "Available options: 'current', 'minutely', 'hourly', 'daily', 'alerts'. "
+            "Provide as a comma-delimited list (without spaces)."
+        ),
     )
     timestamp: Optional[int] = Field(
         None,
@@ -205,25 +214,13 @@ class WeatherForecastQuery(BaseModel):
     date: Optional[str] = Field(
         None,
         pattern=r"\d{4}-\d{2}-\d{2}",
-        description="Date in 'YYYY-MM-DD' format. Required for 'daily_aggregate' and optional for 'overview'.",
+        description="Date in 'YYYY-MM-DD' format. Required for 'daily_aggregate', optional for 'overview'.",
     )
     timezone: Optional[str] = Field(
         None,
         pattern=r"^[+-](0[0-9]|1[0-4]):[0-5][0-9]$",
         description="Timezone in ±HH:MM format. Used for 'daily_aggregate' operation.",
     )
-
-    @validator("operation")
-    def validate_operation(cls, v):
-        valid_operations = [
-            "current_forecast",
-            "historical",
-            "daily_aggregate",
-            "overview",
-        ]
-        if v not in valid_operations:
-            raise ValueError(f"Invalid operation. Must be one of: {valid_operations}")
-        return v
 
 
 def get_weather_forecast_tool() -> StructuredTool:
@@ -237,25 +234,33 @@ def get_weather_forecast_tool() -> StructuredTool:
         name="weather_forecast",
         func=weather_forecast,
         description=(
-            "weather_forecast(operation: str, lat: float, lon: float, units: Optional[str], lang: Optional[str], exclude: Optional[list], timestamp: Optional[int], date: Optional[str], timezone: Optional[str]) -> dict:\n"
-            " - Retrieves detailed weather information from the OpenWeather One Call API 3.0.\n"
-            " - **operation** (str): Specifies the type of weather data to retrieve:\n"
-            "    - 'current_forecast': Provides current weather and forecast data.\n"
-            "    - 'historical': Retrieves historical weather data. Requires `timestamp`.\n"
-            "    - 'daily_aggregate': Fetches daily aggregated weather data. Requires `date` and optionally `timezone`.\n"
-            "    - 'overview': Generates a weather overview with an AI-generated summary. Accepts `date` (optional).\n"
-            " - **lat** (float): Latitude of the location (range: -90 to 90).\n"
-            " - **lon** (float): Longitude of the location (range: -180 to 180).\n"
-            " - **units** (str, optional): Units of measurement. Options:\n"
-            "    - 'standard': Default units.\n"
-            "    - 'metric': Celsius for temperature, meters/second for wind speed.\n"
-            "    - 'imperial': Fahrenheit for temperature, miles/hour for wind speed.\n"
-            " - **lang** (str, optional): Language code for descriptions (e.g., 'en', 'es', 'fr'). Default is 'en'.\n"
-            " - **exclude** (list, optional): List of data blocks to exclude from `current_forecast` (e.g., ['minutely', 'alerts']).\n"
-            " - **timestamp** (int, optional): Unix timestamp for historical data. Required for 'historical' operation.\n"
-            " - **date** (str, optional): Date in 'YYYY-MM-DD' format. Required for 'daily_aggregate' and optional for 'overview'.\n"
-            " - **timezone** (str, optional): Timezone in ±HH:MM format. Used for 'daily_aggregate' operation.\n"
-            " - Returns a dictionary containing the requested weather information.\n"
+            'Fetches weather data from OpenWeather One Call API 3.0 for:\n'
+            ' weather_forecast(\n'
+            '    operation: Literal[\'current_forecast\', \'historical\', \'daily_aggregate\', \'overview\'],\n'
+            '    lat: float,\n'
+            '    lon: float,\n'
+            '    units: Optional[str] = \'standard\',\n'
+            '    lang: Optional[str] = \'en\',\n'
+            '    exclude: Optional[List[Literal[\'current\', \'minutely\', \'hourly\', \'daily\', \'alerts\']]] = None,\n'
+            '    timestamp: Optional[int] = None,\n'
+            '    date: Optional[str] = None,\n'
+            '    timezone: Optional[str] = None\n)'
+            '- \'current_forecast\': Current weather and forecast.\n'
+            '- \'historical\': Historical data (requires timestamp).\n'
+            '- \'daily_aggregate\': Daily aggregates (requires date, optional timezone).\n'
+            '- \'overview\': Weather summary (optional date).\n'
+            'Parameters:\n'
+            'operation (str): Specifies data type. Options: \'current_forecast\', \'historical\', \'daily_aggregate\', \'overview\'.\n'
+            'lat (float): Latitude (-90 to 90).\n'
+            'lon (float): Longitude (-180 to 180).\n'
+            'units (str, optional): Measurement units. Options: \'standard\' (Kelvin, m/s), \'metric\' (Celsius, m/s), \'imperial\' (Fahrenheit, mph).\n'
+            'lang (str, optional): Language. Default is \'en\'.\n'
+            'exclude (list, optional): List of data blocks to exclude from the API response. **It is crucial to exclude irrelevant data blocks to optimize performance and reduce unnecessary data transfer.** Available options: [\'current\', \'minutely\', \'hourly\', \'daily\', \'alerts\'].'
+            'timestamp (int, optional): Unix timestamp for \'historical\'.\n'
+            'date (str, optional): Date (YYYY-MM-DD). Required for \'daily_aggregate\', optional for \'overview\'.\n'
+            'timezone (str, optional): Timezone (±HH:MM) for \'daily_aggregate\'.\n'
+            'Returns:\n'
+            'a dictionary with the weather information.'
         ),
         input_schema=WeatherForecastQuery,
     )

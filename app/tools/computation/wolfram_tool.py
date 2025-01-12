@@ -1,8 +1,10 @@
 import os
+
 import requests
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
+
 from app.logger import configured_logger  # Assuming the logger is imported here
 
 # Load environment variables
@@ -71,31 +73,27 @@ def get_wolfram_tool():
         name="wolfram_alpha",
         func=wolfram_alpha_computing,
         description=(
-            "wolfram_alpha(query: str, max_chars: int = 6800) -> str:\n"
-            " - Sends a query to Wolfram Alpha API and returns the response.\n"
-            " - `query` is the input string to search.\n"
-            " - `max_chars` specifies the maximum character limit for the response.\n"
-            " - Returns the structured response or an error message if the query fails.\n"
-            "\n"
-            "- WolframAlpha understands natural language queries about entities in chemistry, physics, geography, history, art, astronomy, and more.\n"
-            "- WolframAlpha performs mathematical calculations, date and unit conversions, formula solving, etc.\n"
-            "- Convert inputs to simplified keyword queries whenever possible.\n"
-            "- Send queries in English only; translate non-English queries before sending, then respond in the original language.\n"
-            "- Display image URLs with Markdown syntax: ![URL].\n"
-            "- ALWAYS use this exponent notation: `6*10^14`, NEVER `6e14`.\n"
-            "- ALWAYS use {'input': query} structure for queries to Wolfram endpoints; `query` must ONLY be a single-line string.\n"
-            "- ALWAYS use proper Markdown formatting for all math, scientific, and chemical formulas, symbols, etc.:  '$$\n[expression]\n$$' for standalone cases and '\\( [expression] \\)' when inline.\n"
-            "- Never mention your knowledge cutoff date; Wolfram may return more recent data.\n"
-            "- Use ONLY single-letter variable names, with or without integer subscript (e.g., n, n1, n_1).\n"
-            "- Use named physical constants (e.g., 'speed of light') without numerical substitution.\n"
-            "- Include a space between compound units (e.g., 'Ω m' for 'ohm*meter').\n"
-            "- To solve for a variable in an equation with units, consider solving a corresponding equation without units; exclude counting units (e.g., books), include genuine units (e.g., kg).\n"
-            "- If data for multiple properties is needed, make separate calls for each property.\n"
-            "- If a WolframAlpha result is not relevant to the query:\n"
-            "    -- If Wolfram provides multiple 'Assumptions' for a query, choose the more relevant one(s) without explaining the initial result. If you are unsure, ask the user to choose.\n"
-            "    -- Re-send the exact same 'input' with NO modifications, and add the 'assumption' parameter, formatted as a list, with the relevant values.\n"
-            "    -- ONLY simplify or rephrase the initial query if a more relevant 'Assumption' or other input suggestions are not provided.\n"
-            "    -- Do not explain each step unless user input is needed. Proceed directly to making a better API call based on the available assumptions.\n"
+            'Sends a query to the Wolfram Alpha API and returns the response.\n'
+            'Wolfram Alpha handles natural language queries across various domains, including math, science, and art.\n'
+            'Supports calculations, conversions, formula solving, and more. Simplify inputs into keywords where possible.\n'
+            'Queries must be in English. Translate if necessary but reply in the original language.\n'
+            'Use Markdown for math formatting:\n'
+            '    - Standalone math: `$$[expression]$$`\n'
+            '    - Inline math: `\\([expression]\\)`\n'
+            'Follow these conventions:\n'
+            '    - Use `6 * 10 ^ 14` instead of `6e14`.\n'
+            '    - Prefer single-letter variable names and named constants (e.g., \'speed of light\').\n'
+            '    - Separate compound units with spaces (e.g., \'Ω m\').\n'
+            'Solve equations without units for clarity; include real units only where necessary.\n'
+            'Handle irrelevant results by re-sending queries with assumptions or asking for user input if needed.\n'
+            'Parameters:\n'
+            '    query: The single line input string to search.\n'
+            '    max_chars: Specifies the maximum character limit for the response.\n'
+            'Returns:\n'
+            '    A text response based on the query,'
         ),
         input_schema=WolframAlphaQuery,
     )
+
+
+print(len(get_wolfram_tool().description))

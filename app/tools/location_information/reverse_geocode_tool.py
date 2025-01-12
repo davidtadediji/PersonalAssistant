@@ -48,8 +48,8 @@ def get_reverse_geocode_tool():
         name="reverse_geocode",
         func=reverse_geocode,
         description=(
-            "reverse_geocode(lat: float, lon: float, limit: int) -> dict:\n"
             " - Performs reverse geocoding to get location names from geographical coordinates.\n"
+            "reverse_geocode(lat: float, lon: float, limit: int) -> dict:\n"
             " - Returns a list of matching locations or an error message if no results are found.\n"
         ),
         input_schema=ReverseGeocodeQuery,

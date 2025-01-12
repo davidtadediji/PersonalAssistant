@@ -1,9 +1,12 @@
 import sqlite3
 from pathlib import Path
 from typing import List, Dict, Optional, Any
+
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+
 from app.logger import configured_logger
+
 
 def get_resource_path(resource_name: str) -> Path:
     """
@@ -131,31 +134,24 @@ def sql_database_tool() -> StructuredTool:
         func=sql_database,
         description=(
             "Perform CRUD operations and custom queries on the database.\n"
-            "\n"
-            "### Operations and Parameters:\n"
-            "- **operation** (str): Specifies the type of operation to perform:\n"
-            "    - 'create': Inserts new data into a table. Requires `table_name`, `data`, and `columns`.\n"
-            "    - 'read': Retrieves data from the database. Requires a custom `query`.\n"
-            "    - 'update': Updates existing data in a table. Requires `table_name`, `data`, and `condition`.\n"
-            "    - 'delete': Removes data from a table. Requires `table_name` and `condition`.\n"
-            "    - 'execute': Executes a custom SQL query. Requires `query`.\n"
-            "\n"
-            "- **db_name** (str): The name of the SQLite database file to connect to.\n"
-            "- **table_name** (str, optional): The name of the table for 'create', 'update', or 'delete' operations.\n"
-            "- **data** (dict, optional): The data to be inserted or updated. Required for 'create' and 'update' operations.\n"
-            "- **columns** (list, optional): List of column names for the 'create' operation.\n"
-            "- **condition** (str, optional): A condition clause for 'update' or 'delete' operations (e.g., 'id=1').\n"
-            "- **query** (str, optional): A custom SQL query for the 'execute' operation. Can handle SELECT, INSERT, UPDATE, or DELETE statements.\n"
-            "\n"
-            "### Returns:\n"
-            "- A dictionary with the status and a message about the operation's success or failure.\n"
-            "- For 'read' and 'execute' operations, it returns the query results if applicable.\n"
-            "\n"
-            "### Usage Notes:\n"
-            "- Ensure the database file exists and is accessible.\n"
-            "- The `table_name`, `data`, `columns`, and `condition` parameters are contextually required for certain operations.\n"
-            "- Custom queries (e.g., for 'execute') should be valid SQL statements.\n"
-        ),
+            "Operations:\n"
+            "- **operation** (str): Type of operation:\n"
+            "    - 'create': Inserts data (requires `table_name`, `data`, `columns`).\n"
+            "    - 'read': Retrieves data (requires `query`).\n"
+            "    - 'update': Updates data (requires `table_name`, `data`, `condition`).\n"
+            "    - 'delete': Removes data (requires `table_name`, `condition`).\n"
+            "    - 'execute': Executes custom query (requires `query`).\n"
+            "- **db_name** (str): SQLite database file name.\n"
+            "- **table_name** (str, optional): Table name for operations.\n"
+            "- **data** (dict, optional): Data to insert or update.\n"
+            "- **columns** (list, optional): Column names for 'create'.\n"
+            "- **condition** (str, optional): Condition for 'update'/'delete'.\n"
+            "- **query** (str, optional): Custom SQL query for 'execute'.\n"
+            "Returns:\n"
+            "- Dictionary with status and message.\n"
+            "- For 'read'/'execute', returns query results."
+        )
+        ,
         input_schema=SQLDatabaseQuery,
     )
 

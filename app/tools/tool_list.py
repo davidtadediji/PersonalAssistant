@@ -2,7 +2,7 @@ from app.llm_compiler.llm_initializer import execution_llm
 from app.tools.location_information.current_location_tool import get_current_location_tool
 from app.tools.direct_response_tool import get_direct_response_tool
 from app.tools.location_information.geocode_tool import get_geocode_location_tool
-from app.tools.data_extraction.image_url_interpreter_tool import get_image_url_interpreter_tool
+from app.tools.content_extraction.image_url_interpreter_tool import get_image_url_interpreter_tool
 from app.tools.personal_information.personal_information_tool import (
     get_store_user_personal_info_tool,
     get_retrieve_user_personal_info_tool,

@@ -67,8 +67,8 @@ def get_geocode_location_tool():
         name="geocode_location",
         func=geocode_location,
         description=(
-            "geocode_location(location_name: Optional[str], zip_code: Optional[str], limit: int) -> dict:\n"
             " - Queries the OpenWeather Geocoding API to get geographical coordinates by location name or zip code.\n"
+            "geocode_location(location_name: Optional[str], zip_code: Optional[str], limit: int) -> dict:\n"
             " - Returns a list of matching locations or an error message if no results are found.\n"
         ),
         input_schema=GeocodeLocationQuery,

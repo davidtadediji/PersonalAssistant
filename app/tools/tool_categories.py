@@ -1,4 +1,4 @@
-from typing import List, ClassVar
+from typing import List, ClassVar, Sequence
 
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, model_validator
@@ -89,33 +89,44 @@ def create_tool_category(name: str, description: str, tools: List):
 
 create_tool_category("Computation", "Tools for performing computations and scientific tasks.",
                      [science_and_computation])
+
 # Create more tool categories
-location_category = create_tool_category(
+create_tool_category(
     "Location Information",
     "Tools for geolocation, mapping, and location-based tasks.",
     [geocode_location, reverse_geocode, current_location]
 )
 
-weather_category = create_tool_category(
+create_tool_category(
     "Weather Information",
-    "Tools for weather forecast and related information.",
+    "Tools for weather forecast and information.",
     [weather_information]
 )
 
-content_category = create_tool_category(
+create_tool_category(
     "Content Extraction",
     "Tools for extracting content from various sources.",
     [extract_raw_content_from_url]
 )
 
-user_info_category = create_tool_category(
-    "User Personal Information",
+create_tool_category(
+    "User Personal Info Management",
     "Tools for storing and retrieving user personal information.",
     [store_user_personal_info, retrieve_user_personal_info]
 )
 
-categories = ToolCategory.all_categories
+tool_categories = ToolCategory.all_categories
 
-# Print categories
-for c in categories:
+def filter_tools_by_category(tools: Sequence[BaseTool], selected_categories: List[str]) -> List[BaseTool]:
+    """
+    Filter tools based on selected categories.
+    """
+    if not selected_categories:
+        return tools  # Return all tools if no categories are selected
+    return [tool for tool in tools if getattr(tool, "category", None) in selected_categories]
+
+
+
+# Print tool categories
+for c in tool_categories:
     print(c.model_dump(mode='json'))
