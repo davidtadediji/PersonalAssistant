@@ -1,10 +1,10 @@
 from typing import List, ClassVar, Sequence
-
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, model_validator
+from langchain_core.tools import BaseTool
 
 from app.tools.tool_list import science_and_computation, reverse_geocode, geocode_location, current_location, \
-    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information
+    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information, tools
 
 
 # Assuming Tool and StructuredTool are properly defined in the appropriate modules
@@ -117,14 +117,14 @@ create_tool_category(
 
 tool_categories = ToolCategory.all_categories
 
-def filter_tools_by_category(tools: Sequence[BaseTool], selected_categories: List[str]) -> List[BaseTool]:
+def filter_tools_by_category(selected_categories: List[str]) -> List[BaseTool]:
     """
     Filter tools based on selected categories.
     """
     if not selected_categories:
         return tools  # Return all tools if no categories are selected
+    tool_categories.tools for tool_category_name in selected_categories
     return [tool for tool in tools if getattr(tool, "category", None) in selected_categories]
-
 
 
 # Print tool categories
