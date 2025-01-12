@@ -102,7 +102,7 @@ class ReplitSandbox:
         """
         if requirements:
             configured_logger.info(f"Uploading requirements.txt to Repl {repl_id}")
-            self.upload_file(repl_id, "../requirements.txt", requirements)
+            self.upload_file(repl_id, "../../requirements.txt", requirements)
 
 
 class ReplitSandboxQuery(BaseModel):

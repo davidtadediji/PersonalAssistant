@@ -1,22 +1,22 @@
 from app.llm_compiler.llm_initializer import execution_llm
-from app.tools.current_location_tool import get_current_location_tool
+from app.tools.location_information.current_location_tool import get_current_location_tool
 from app.tools.direct_response_tool import get_direct_response_tool
-from app.tools.geocode_tool import get_geocode_location_tool
-from app.tools.image_url_interpreter_tool import get_image_url_interpreter_tool
-from app.tools.personal_information_tool import (
+from app.tools.location_information.geocode_tool import get_geocode_location_tool
+from app.tools.data_extraction.image_url_interpreter_tool import get_image_url_interpreter_tool
+from app.tools.personal_information.personal_information_tool import (
     get_store_user_personal_info_tool,
     get_retrieve_user_personal_info_tool,
 )
-from app.tools.reverse_geocode_tool import get_reverse_geocode_tool
-from app.tools.tavily_extract_tool import get_tavily_extract_tool
-from app.tools.weather_forecast_tool import (
+from app.tools.location_information.reverse_geocode_tool import get_reverse_geocode_tool
+from app.tools.web_browsing.tavily_extract_tool import get_tavily_extract_tool
+from app.tools.weather_information.weather_forecast_tool import (
     get_weather_forecast_tool,
 )
-from app.tools.wolfram_tool import get_wolfram_tool
+from app.tools.computation.wolfram_tool import get_wolfram_tool
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-from app.tools.math_tools import get_math_tool
+from app.tools.computation.math_tools import get_math_tool
 import os
 os.getenv("TAVILY_API_KEY")
 
