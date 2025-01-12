@@ -1,28 +1,18 @@
-from typing import List, ClassVar, Sequence
+from typing import List, ClassVar, Dict
 from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, model_validator
-from langchain_core.tools import BaseTool
+from pydantic import BaseModel
 
-from app.tools.tool_list import science_and_computation, reverse_geocode, geocode_location, current_location, \
-    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information, tools
-
-
-# Assuming Tool and StructuredTool are properly defined in the appropriate modules
-class Tool(BaseModel):
-    """
-    Represents a tool with a name and a short description.
-    """
-    name: str
-    description: str
+from app.tools.tool_registry import science_and_computation, reverse_geocode, geocode_location, current_location, \
+    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information, tools_registry
 
 
 class ToolCategory(BaseModel):
     """
-    Represents a category of tools with a description, category name, and list of tools.
+    Represents a category of tools with a description, category name, and list of StructuredTool instances.
     """
     name: str
     description: str
-    tools: List[Tool]
+    tools: List[StructuredTool]  # Directly store StructuredTool instances
 
     all_categories: ClassVar[List["ToolCategory"]] = []
 
@@ -39,58 +29,31 @@ class ToolCategory(BaseModel):
             cls.all_categories = []  # Ensure it's initialized before use
         cls.all_categories.append(category)
 
-    def add_tool(self, tool: Tool):
+    def get_tool_summaries(self) -> List[Dict[str, str]]:
         """
-        Add a tool to the category.
-
-        :param tool: A Tool instance to add to the category.
+        Return a list of tool summaries (name and short description) for this category.
         """
-        self.tools.append(tool)
-
-    def list_tools(self):
-        """
-        List all tools in the category.
-
-        :return: A list of tools with their names and descriptions.
-        """
-        return self.tools
-
-    @model_validator(mode='before')
-    def parse_tools(cls, values):
-        """
-        Ensure that tools are instances of the Tool model or StructuredTool.
-        If a StructuredTool is provided, extract the name and description and convert to Tool.
-        """
-        tools = values.get('tools', [])
-
-        # Check if tools is a list of StructuredTools and convert them into Tool instances
-        if tools and isinstance(tools, list):
-            values['tools'] = [
-                Tool(name=tool.name, description=tool.description.split("\n")[0]) if isinstance(tool, StructuredTool)
-                else tool
-                for tool in tools
-            ]
-
-        # Ensure all tools are Tool instances (for type safety)
-        for idx, tool in enumerate(values['tools']):
-            if not isinstance(tool, Tool):
-                raise ValueError(f"Tool at index {idx} is not a valid Tool instance.")
-
-        return values
+        return [{"name": tool.name, "description": tool.description.split("\n")[0]} for tool in self.tools]
 
 
 # Define categories
-def create_tool_category(name: str, description: str, tools: List):
+def create_tool_category(name: str, description: str, tools: List[StructuredTool]):
+    """
+    Create a tool category and add it to the global list of categories.
+    """
     for tool in tools:
-        if not isinstance(tool, (Tool, StructuredTool)):
-            raise ValueError(f"Invalid tool: {type(tool)}")
+        if not isinstance(tool, StructuredTool):
+            raise ValueError(f"Invalid tool: {type(tool)}. Expected StructuredTool.")
     ToolCategory(name=name, description=description, tools=tools)
 
 
-create_tool_category("Computation", "Tools for performing computations and scientific tasks.",
-                     [science_and_computation])
+# Create tool categories
+create_tool_category(
+    "Computation",
+    "Tools for performing computations and scientific tasks.",
+    [science_and_computation]
+)
 
-# Create more tool categories
 create_tool_category(
     "Location Information",
     "Tools for geolocation, mapping, and location-based tasks.",
@@ -117,15 +80,37 @@ create_tool_category(
 
 tool_categories = ToolCategory.all_categories
 
-def filter_tools_by_category(selected_categories: List[str]) -> List[BaseTool]:
+
+def get_all_tool_summaries() -> Dict[str, List[Dict[str, str]]]:
     """
-    Filter tools based on selected categories.
+    Return a dictionary where keys are category names and values are lists of tool summaries
+    (name and short description) for all categories.
+    """
+    return {
+        category.name: category.get_tool_summaries()
+        for category in tool_categories
+    }
+
+
+def filter_tools_by_category(selected_categories: List[str]) -> List[StructuredTool]:
+    """
+    Filter tools based on selected categories and return the full StructuredTool instances.
+
+    Args:
+        selected_categories (List[str]): A list of category names to filter by.
+
+    Returns:
+        List[StructuredTool]: A list of StructuredTool instances that belong to the selected categories.
     """
     if not selected_categories:
-        return tools  # Return all tools if no categories are selected
-    tool_categories.tools for tool_category_name in selected_categories
-    return [tool for tool in tools if getattr(tool, "category", None) in selected_categories]
+        # If no categories are selected, return all tools
+        return tools_registry
 
-# Print tool categories
-for c in tool_categories:
-    print(c.model_dump(mode='json'))
+    filtered_tools = []
+    for category in tool_categories:
+        if category.name in selected_categories:
+            filtered_tools.extend(category.tools)
+
+    return filtered_tools
+
+# print(filter_tools_by_category(["User Personal Info Management"]))

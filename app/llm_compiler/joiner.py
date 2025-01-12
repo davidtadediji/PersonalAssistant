@@ -1,9 +1,10 @@
 from typing import Union, List
 
 from dotenv import load_dotenv
-from langchain import hub
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
 from pydantic import BaseModel, Field
+
+from app.llm_compiler.prompts import joiner_prompt
 
 load_dotenv()
 
@@ -28,12 +29,6 @@ class JoinOutputs(BaseModel):
     )
     action: Union[FinalResponse, RePlan]
 
-
-joiner_prompt = hub.pull("wfh/llm-compiler-joiner").partial(
-    examples="Note: Where appropriate, a search engine tool could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails"
-)  # You can optionally add examples
-# llm = ChatOpenAI(model=os.getenv("PLANNING_MODEL"))
-
 from app.llm_compiler.llm_initializer import llm
 
 runnable = joiner_prompt | llm.with_structured_output(JoinOutputs)
@@ -44,11 +39,11 @@ def _parse_joiner_output(decision: JoinOutputs) -> List[BaseMessage]:
     if isinstance(decision.action, RePlan):
         return {
             "messages": response
-            + [
-                SystemMessage(
-                    content=f"Context from last attempt: {decision.action.feedback}"
-                )
-            ]
+                        + [
+                            SystemMessage(
+                                content=f"Context from last attempt: {decision.action.feedback}"
+                            )
+                        ]
         }
     else:
         return {"messages": response + [AIMessage(content=decision.action.response)]}

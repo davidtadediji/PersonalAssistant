@@ -39,7 +39,7 @@ search_engine = TavilySearchResults(
     description='tavily_search_results_json(query="the search query") - a search engine. Where appropriate, it could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails.',
 )
 
-tools = [
+tools_registry = [
     search_engine,
 browser_use,
     geocode_location,

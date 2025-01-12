@@ -3,8 +3,8 @@ import os
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
