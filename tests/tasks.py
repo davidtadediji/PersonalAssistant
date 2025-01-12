@@ -1,6 +1,9 @@
 import datetime
-from app.llm_compiler.agent import chain
+
 from langchain_core.messages import HumanMessage
+
+from app.llm_compiler.agent import chain
+
 
 # Function to save responses with a timestamp
 def save_response(response):
@@ -9,13 +12,20 @@ def save_response(response):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         f.write(f"{timestamp}\n{response}\n---\n")
 
+
+# Stream and save responses
+for step in chain.stream(
+        {"messages": [HumanMessage(content="Go to Reddit, search for 'browser-use' in the search bar, "
+                                           "click on the first post and return the first comment.")]}):
+    response = str(step)
+    save_response(response)
+
 # Stream and save responses
 for step in chain.stream(
         {"messages": [HumanMessage(content="What is my current location, find the temperature and get the distance "
                                            "it and new york, and store the distance for me as next trip, store that I love hiking, find the temperature for tokyo")]}):
     response = str(step)
     save_response(response)
-
 
 # Stream and save responses
 # for step in chain.stream(

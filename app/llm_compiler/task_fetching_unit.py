@@ -11,7 +11,6 @@ from typing_extensions import TypedDict
 
 from app.llm_compiler.output_parser import Task
 from app.llm_compiler.planner import planner
-from app.tools.tool_categories import filter_tools_by_category
 
 
 def _get_observations(messages: List[BaseMessage]) -> Dict[int, Any]:
@@ -189,13 +188,6 @@ import itertools
 @as_runnable
 def plan_and_schedule(state):
     messages = state["messages"]
-    selected_tool_categories = state["selected_tool_categories"]
-
-    # Filter tools based on selected categories
-    filtered_tools = filter_tools_by_category(tools, selected_tool_categories)
-
-    # Update the planner's tools dynamically
-    planner.tools = filtered_tools
     tasks = planner.stream(messages)
     # Begin executing the planner immediately
     try:

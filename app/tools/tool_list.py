@@ -8,6 +8,7 @@ from app.tools.personal_information.personal_information_tool import (
     get_retrieve_user_personal_info_tool,
 )
 from app.tools.location_information.reverse_geocode_tool import get_reverse_geocode_tool
+from app.tools.web_browsing.browser_use_tool import get_browser_task_tool
 from app.tools.web_browsing.tavily_extract_tool import get_tavily_extract_tool
 from app.tools.weather_information.weather_forecast_tool import (
     get_weather_forecast_tool,
@@ -32,7 +33,7 @@ image_url_interpreter = get_image_url_interpreter_tool()
 store_user_personal_info = get_store_user_personal_info_tool()
 retrieve_user_personal_info = get_retrieve_user_personal_info_tool()
 direct_response = get_direct_response_tool()
-
+browser_use = get_browser_task_tool()
 search_engine = TavilySearchResults(
     max_results=1,
     description='tavily_search_results_json(query="the search query") - a search engine. Where appropriate, it could be defaulted to after several attempts at using a more specific tool to accomplish a task but fails.',
@@ -40,6 +41,7 @@ search_engine = TavilySearchResults(
 
 tools = [
     search_engine,
+browser_use,
     geocode_location,
     weather_information,
     reverse_geocode,

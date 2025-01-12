@@ -126,7 +126,6 @@ def filter_tools_by_category(selected_categories: List[str]) -> List[BaseTool]:
     tool_categories.tools for tool_category_name in selected_categories
     return [tool for tool in tools if getattr(tool, "category", None) in selected_categories]
 
-
 # Print tool categories
 for c in tool_categories:
     print(c.model_dump(mode='json'))
