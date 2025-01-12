@@ -18,7 +18,7 @@ from typing_extensions import TypedDict
 
 from app.llm_compiler.joiner import joiner
 from app.llm_compiler.task_fetching_unit import plan_and_schedule
-from app.tools.current_location_tool import get_current_location_tool
+from app.tools.location_information.current_location_tool import get_current_location_tool
 
 tool_registry = {
     str(uuid.uuid4()): get_current_location_tool()

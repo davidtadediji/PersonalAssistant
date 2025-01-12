@@ -39,14 +39,13 @@ search_engine = TavilySearchResults(
 )
 
 tools = [
-# calculate,
-    # search_engine,
+    search_engine,
     geocode_location,
-    # weather_information,
-    # reverse_geocode,
+    weather_information,
+    reverse_geocode,
     current_location,
-    # extract_raw_content_from_url,
-    # image_url_interpreter,
+    extract_raw_content_from_url,
+    image_url_interpreter,
     store_user_personal_info,
     retrieve_user_personal_info,
 ]
