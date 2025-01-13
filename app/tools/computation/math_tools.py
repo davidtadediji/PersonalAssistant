@@ -11,8 +11,9 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 _MATH_DESCRIPTION = (
-    "math(problem: str, context: Optional[list[str]]) -> float:\n"
     " - Solves math problems: accepts simple calculations ('1 + 3') or word problems ('how many apples if 3 plus 2').\n"
+    " - Tool signature: math(problem: str, context: Optional[list[str]]) -> float:\n"
+    " - context is an optional parameter that accepts a list of strings (List[str]) to supply relevant additional information for solving the math problem, not the values or the problem itself"
     " - Multiple expressions per call not allowed (e.g., 'math(1 + 3, 2 + 4)'). Call separately: math('1 + 3') then math('2 + 4').\n"
     " - Minimize math actions: Instead of math('10% of $1') + math('$1 + $2'), use math('110% of $1').\n"
     " - Optional context parameter accepts string list to aid problem-solving.\n"

@@ -83,8 +83,8 @@ def get_tavily_extract_tool():
         name="tavily_extract",
         func=extract_raw_content_from_url,
         description=(
-            "tavily_extract(urls: List[str]) -> dict:\n"
             " - Retrieve raw web content from specified URLs using the Tavily API.\n"
+            " - tool signature: tavily_extract(urls: List[str]) -> dict:\n"
             " - Returns a dictionary with the extraction results, including raw content and any errors.\n"
         ),
         input_schema=TavilyExtractQuery,

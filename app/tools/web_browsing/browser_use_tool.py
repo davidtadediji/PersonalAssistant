@@ -21,7 +21,7 @@ def execute_browser_task(task: str) -> Dict:
     async def main():
         agent = Agent(
             task=task,
-            llm=ChatOpenAI(model="gpt-4o"),
+            llm=ChatOpenAI(model="gpt-4o-mini"),
         )
         result = await agent.run()
         return result

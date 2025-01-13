@@ -8,7 +8,6 @@ from app.llm_compiler.prompts import joiner_prompt
 
 load_dotenv()
 
-
 class FinalResponse(BaseModel):
     """The final response/answer."""
 

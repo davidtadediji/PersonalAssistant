@@ -1,9 +1,11 @@
 from typing import List, ClassVar, Dict
+
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
 
-from app.tools.tool_registry import science_and_computation, reverse_geocode, geocode_location, current_location, \
-    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information, tools_registry
+from app.tools.tool_registry import reverse_geocode, geocode_location, current_location, \
+    store_user_personal_info, retrieve_user_personal_info, extract_raw_content_from_url, weather_information, \
+    tools_registry, calculate, search_engine, browser_use
 
 
 class ToolCategory(BaseModel):
@@ -51,7 +53,7 @@ def create_tool_category(name: str, description: str, tools: List[StructuredTool
 create_tool_category(
     "Computation",
     "Tools for performing computations and scientific tasks.",
-    [science_and_computation]
+    [calculate]
 )
 
 create_tool_category(
@@ -76,6 +78,12 @@ create_tool_category(
     "User Personal Info Management",
     "Tools for storing and retrieving user personal information.",
     [store_user_personal_info, retrieve_user_personal_info]
+)
+
+create_tool_category(
+    "Web browsing",
+    "Tools for browsing the web",
+    [extract_raw_content_from_url, browser_use]
 )
 
 tool_categories = ToolCategory.all_categories

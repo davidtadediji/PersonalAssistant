@@ -13,34 +13,23 @@ def save_response(response):
         f.write(f"{timestamp}\n{response}\n---\n")
 
 
-# Stream and save responses
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="Go to Reddit, search for 'browser-use' in the search bar, "
-#                                            "click on the first post and return the first comment.")]}):
-#     response = str(step)
-#     save_response(response)
+for step in chain.stream(
+        {"messages": [HumanMessage(content="What is my current location, find the temperature and get the distance "
+                                           "it and new york, and store the distance for me as next trip, store that I love hiking, find the temperature for tokyo")]}):
+    response = str(step)
+    save_response(response)
 
-# # Stream and save responses
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="What is my current location, find the temperature and get the distance "
-#                                            "it and new york, and store the distance for me as next trip, store that I love hiking, find the temperature for tokyo")]}):
-#     response = str(step)
-#     save_response(response)
-
-# Stream and save responses
 # for step in chain.stream(
 #         {"messages": [HumanMessage(content="Calculate bmi for 200pounds at 5'11")]}):
 #     response = str(step)
 #     save_response(response)
-
-# Stream and save responses
+#
 # for step in chain.stream(
 #         {"messages": [HumanMessage(content="What is turkesterone")]}):
 #     response = str(step)
 #     save_response(response)
-
-
-# Stream and save responses
+#
+#
 # for step in chain.stream(
 #         {"messages": [HumanMessage(content="Hi, How are you?")]}):
 #     response = str(step)
@@ -51,13 +40,20 @@ def save_response(response):
 #     response = str(step)
 #     save_response(response)
 #
-
-for step in chain.stream(
-        {"messages": [HumanMessage(content="My name is David")]}):
-    response = str(step)
-    save_response(response)
 #
 # for step in chain.stream(
+#         {"messages": [HumanMessage(content="My name is David")]}):
+#     response = str(step)
+#     save_response(response)
+# #
+# for step in chain.stream(
 #         {"messages": [HumanMessage(content="How can I cook fish?")]}):
+#     response = str(step)
+#     save_response(response)
+#
+#
+# for step in chain.stream(
+#         {"messages": [HumanMessage(content="Go to Reddit, search for 'browser-use' in the search bar, "
+#                                            "click on the first post and return the first comment.")]}):
 #     response = str(step)
 #     save_response(response)

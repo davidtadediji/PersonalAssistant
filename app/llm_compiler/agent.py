@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 
 from app.llm_compiler.joiner import joiner
+from app.llm_compiler.prompts import TOOL_CATEGORY_PROMPT
 from app.llm_compiler.task_fetching_unit import plan_and_schedule
 from app.tools.tool_categories import get_all_tool_summaries
 
@@ -35,31 +36,6 @@ class QueryForTools(BaseModel):
     """Generate a query for additional tools."""
 
     query: str = Field(..., description="Query for additional tools.")
-
-
-# Define the prompt template
-TOOL_CATEGORY_PROMPT = """
-You are a tool category analyzer. Your role is to identify which tool categories are relevant for the given user message.
-
-### Analysis Steps:
-1. Read the user message carefully
-2. Review the available tool categories:
-{tool_categories}
-3. Select categories that match the content or intent of the message
-
-### Guidelines:
-- Only select categories that directly relate to the message content
-- Multiple categories can be selected if the message spans multiple needs
-- Don't make assumptions beyond what's in the message
-- Don't plan actions - just identify relevant categories
-
-### Output Format:
-{{
-  "required_categories": ["Category Name 1", "Category Name 2"],
-  "explanation": "Brief explanation of why each selected category matches the message content"
-}}
-"""
-
 
 def select_tool_categories(state: State):
     # Get the last user message
@@ -99,7 +75,7 @@ def should_continue(state):
     messages = state["messages"]
     if isinstance(messages[-1], AIMessage):
         return END
-    return "plan_and_schedule"
+    return "select_tool_categories"
 
 
 def human_in_the_loop(state: State):
@@ -108,14 +84,14 @@ def human_in_the_loop(state: State):
 
 
 graph_builder = StateGraph(State)
-graph_builder.add_node("select_tools_categories", select_tool_categories, retry=RetryPolicy(max_attempts=3))
+graph_builder.add_node("select_tool_categories", select_tool_categories, retry=RetryPolicy(max_attempts=3))
 # Assign each node to a state variable to update
 graph_builder.add_node("plan_and_schedule", plan_and_schedule)
 graph_builder.add_node("join", joiner)
 
 ## Define edges
-graph_builder.add_edge(START, "select_tools_categories")
-graph_builder.add_edge("select_tools_categories", "plan_and_schedule")
+graph_builder.add_edge(START, "select_tool_categories")
+graph_builder.add_edge("select_tool_categories", "plan_and_schedule")
 graph_builder.add_edge("plan_and_schedule", "join")
 graph_builder.add_conditional_edges(
     "join",

@@ -32,7 +32,7 @@ base_planner_prompt = ChatPromptTemplate.from_messages([
         idx. tool(parameter_name=args)
         <END_OF_PLAN>
         
-        you have to add the parameter name!
+        You have to follow the exact tool signature specified and must include parameter name alongside the argument when calling.
         """
     ),  # Final system message
 ])
@@ -90,3 +90,25 @@ joiner_prompt = ChatPromptTemplate.from_messages([
         """
     ),  # Final system message
 ])
+
+TOOL_CATEGORY_PROMPT = """
+You are a tool category analyzer. Your role is to identify which tool categories are relevant for the given user message.
+
+### Analysis Steps:
+1. Read the user message carefully
+2. Review the available tool categories:
+{tool_categories}
+3. Select categories that match the content or intent of the message
+
+### Guidelines:
+- Only select categories that directly relate to the message content
+- Multiple categories can be selected if the message spans multiple needs
+- Don't make assumptions beyond what's in the message
+- Don't plan actions - just identify relevant categories
+
+### Output Format:
+{{
+  "required_categories": ["Category Name 1", "Category Name 2"],
+  "explanation": "Brief explanation of why each selected category matches the message content"
+}}
+"""
