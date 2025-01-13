@@ -29,8 +29,10 @@ base_planner_prompt = ChatPromptTemplate.from_messages([
         "system",
         """
         Remember, ONLY respond with the task list in the correct format! For example:
-        idx. tool(arg_name=args)
+        idx. tool(parameter_name=args)
         <END_OF_PLAN>
+        
+        you have to add the parameter name!
         """
     ),  # Final system message
 ])

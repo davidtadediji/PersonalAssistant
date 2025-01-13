@@ -41,10 +41,10 @@ def save_response(response):
 
 
 # Stream and save responses
-for step in chain.stream(
-        {"messages": [HumanMessage(content="Hi, How are you?")]}):
-    response = str(step)
-    save_response(response)
+# for step in chain.stream(
+#         {"messages": [HumanMessage(content="Hi, How are you?")]}):
+#     response = str(step)
+#     save_response(response)
 #
 # for step in chain.stream(
 #         {"messages": [HumanMessage(content="What is the hometown of the 2024 Australia Open winner")]}):
