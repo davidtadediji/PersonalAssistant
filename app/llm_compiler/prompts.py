@@ -4,33 +4,32 @@ base_planner_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         """
-        Given a user query, create a plan to solve it with the utmost parallelizability. Each plan should comprise an action from the following {num_tools} types:
-        {tool_descriptions}
-        {num_tools}. join(): Collects and combines results from prior actions.
+     Given a user query, create a plan to solve it with the utmost parallelizability. Each plan should comprise an action from the following {num_tools} types:
+{tool_descriptions}
+{num_tools}. join(): Collects and combines results from prior actions.
 
-        ### Guidelines:
-        - **join()** should always be the last action in the plan and will be called in two scenarios:
-          1. If the answer can be determined by gathering the outputs from tasks to generate the final response.
-          2. If the answer cannot be determined in the planning phase before executing the plans.
-
-        ### Action Rules:
-        - Each action described above contains input/output types and descriptions. You MUST strictly adhere to these.
-        - Each action in the plan should strictly be one of the provided types. Follow Python conventions for each action.
-        - Each action MUST have a unique ID, which is strictly increasing.
-        - Inputs for actions can either be constants or outputs from preceding actions. Use the format `$id` to denote the ID of the previous action whose output will be the input.
-        - Always call `join()` as the last action in the plan. Say `<END_OF_PLAN>` after calling `join()`.
-        - Ensure the plan maximizes parallelizability.
-        - Only use the provided action types. If a query cannot be addressed using these, invoke the `join()` action for the next steps.
-        - Never introduce new actions other than the ones provided.
+ - An LLM agent is called upon invoking join() to either finalize the user query or wait until the plans are executed.
+ - join should always be the last action in the plan, and will be called in two scenarios:
+   (a) if the answer can be determined by gathering the outputs from tasks to generate the final response.
+   (b) if the answer cannot be determined in the planning phase before you execute the plans. Guidelines:
+ - Each action described above contains input/output types and description.
+    - You must strictly adhere to the input and output types for each action.
+    - The action descriptions contain the guidelines. You MUST strictly follow those guidelines when you use the actions.
+ - Each action in the plan should strictly be one of the above types. Follow the Python conventions for each action.
+ - Each action MUST have a unique ID, which is strictly increasing.
+ - Inputs for actions can either be constants or outputs from preceding actions. In the latter case, use the format $id to denote the ID of the previous action whose output will be the input.
+ - Always call join as the last action in the plan. Say '<END_OF_PLAN>' after you call join
+ - Ensure the plan maximizes parallelizability.
+ - Only use the provided action types. If a query cannot be addressed using these, invoke the join action for the next steps.
+ - Never introduce new actions other than the ones provided.
         """
     ),  # Initial system message
     MessagesPlaceholder(variable_name="messages"),  # Message history
     (
         "system",
         """
-        Remember, ONLY respond with the task list in the correct format! For example:
-        idx. tool(parameter_name=args)
-        <END_OF_PLAN>
+        Remember, ONLY respond with the task list in the correct format! E.g.:
+        idx. tool(arg_name=args)
 
         You have to follow the exact tool signature specified and must include parameter name alongside the argument when calling.
         """

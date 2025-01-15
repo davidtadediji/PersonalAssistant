@@ -19,37 +19,37 @@ for step in chain.stream(
     response = str(step)
     save_response(response)
 
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="Calculate bmi for 200pounds at 5'11")]}):
-#     response = str(step)
-#     save_response(response)
+for step in chain.stream(
+        {"messages": [HumanMessage(content="Calculate bmi for 200pounds at 5'11")]}):
+    response = str(step)
+    save_response(response)
+
+for step in chain.stream(
+        {"messages": [HumanMessage(content="What is turkesterone")]}):
+    response = str(step)
+    save_response(response)
+
+
+for step in chain.stream(
+        {"messages": [HumanMessage(content="Hi, How are you?")]}):
+    response = str(step)
+    save_response(response)
+
+for step in chain.stream(
+        {"messages": [HumanMessage(content="What is the hometown of the 2024 Australia Open winner")]}):
+    response = str(step)
+    save_response(response)
+
+
+for step in chain.stream(
+        {"messages": [HumanMessage(content="My name is David")]}):
+    response = str(step)
+    save_response(response)
 #
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="What is turkesterone")]}):
-#     response = str(step)
-#     save_response(response)
-#
-#
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="Hi, How are you?")]}):
-#     response = str(step)
-#     save_response(response)
-#
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="What is the hometown of the 2024 Australia Open winner")]}):
-#     response = str(step)
-#     save_response(response)
-#
-#
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="My name is David")]}):
-#     response = str(step)
-#     save_response(response)
-# #
-# for step in chain.stream(
-#         {"messages": [HumanMessage(content="How can I cook fish?")]}):
-#     response = str(step)
-#     save_response(response)
+for step in chain.stream(
+        {"messages": [HumanMessage(content="How can I cook fish?")]}):
+    response = str(step)
+    save_response(response)
 #
 #
 # for step in chain.stream(

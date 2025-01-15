@@ -33,7 +33,7 @@ def get_browser_task_tool():
         name="browser_task",
         func=execute_browser_task,
         description=(
-            " - A more powerful tool executes more complex browser-based task such as navigating to a website, performing a search, and retrieving information.\n"
+            " - Only use for complex browser tasks; A more powerful tool executes more complex browser-based task such as navigating to a website, performing a search, and retrieving information.\n"
             "browser_task(task: str) -> dict:\n"
             " - Returns the result as a dictionary.\n"
         ),
