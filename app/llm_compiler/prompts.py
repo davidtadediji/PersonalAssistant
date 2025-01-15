@@ -31,7 +31,7 @@ base_planner_prompt = ChatPromptTemplate.from_messages([
         Remember, ONLY respond with the task list in the correct format! For example:
         idx. tool(parameter_name=args)
         <END_OF_PLAN>
-        
+
         You have to follow the exact tool signature specified and must include parameter name alongside the argument when calling.
         """
     ),  # Final system message
