@@ -1,23 +1,22 @@
 from app.llm_compiler.llm_initializer import execution_llm
-from app.tools.location_information.current_location_tool import get_current_location_tool
-from app.tools.direct_response_tool import get_direct_response_tool
-from app.tools.location_information.geocode_tool import get_geocode_location_tool
-from app.tools.content_extraction.image_url_interpreter_tool import get_image_url_interpreter_tool
-from app.tools.personal_information.personal_information_tool import (
+from app.tools.location_information.current_location import get_current_location_tool
+from app.tools.location_information.geocode import get_geocode_location_tool
+from app.tools.content_extraction.image_url_interpreter import get_image_url_interpreter_tool
+from app.tools.manage_personal_info import (
     get_store_user_personal_info_tool,
     get_retrieve_user_personal_info_tool,
 )
-from app.tools.location_information.reverse_geocode_tool import get_reverse_geocode_tool
-from app.tools.web_browsing.browser_use_tool import get_browser_task_tool
-from app.tools.web_browsing.tavily_extract_tool import get_tavily_extract_tool
-from app.tools.weather_information.weather_forecast_tool import (
+from app.tools.location_information.reverse_geocode import get_reverse_geocode_tool
+from app.tools.web_browsing.browser_use import get_browser_task_tool
+from app.tools.web_browsing.tavily_extract import get_tavily_extract_tool
+from app.tools.weather_forecast import (
     get_weather_forecast_tool,
 )
-from app.tools.computation.wolfram_tool import get_wolfram_tool
+from app.tools.computation.wolfram import get_wolfram_tool
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-from app.tools.computation.math_tools import get_math_tool
+from app.tools.computation.math import get_math_tool
 import os
 os.getenv("TAVILY_API_KEY")
 
@@ -32,7 +31,6 @@ weather_information = get_weather_forecast_tool()
 image_url_interpreter = get_image_url_interpreter_tool()
 store_user_personal_info = get_store_user_personal_info_tool()
 retrieve_user_personal_info = get_retrieve_user_personal_info_tool()
-direct_response = get_direct_response_tool()
 browser_use = get_browser_task_tool()
 search_engine = TavilySearchResults(
     max_results=1,

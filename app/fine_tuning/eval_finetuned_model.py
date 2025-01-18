@@ -14,7 +14,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 # Load validation dataset
-validation_data = pd.read_json("../validation.jsonl", lines=True)
+validation_data = pd.read_json("validation.jsonl", lines=True)
 
 # Define the system message with function calls and type hints
 system_message = """

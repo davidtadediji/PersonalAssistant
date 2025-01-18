@@ -12,7 +12,7 @@ client = OpenAI(api_key=openai_api_key)
 
 # Upload the dataset
 train_file = client.files.create(
-    file=open("../actions.jsonl", "rb"),
+    file=open("actions.jsonl", "rb"),
     purpose="fine-tune"
 )
 
