@@ -78,8 +78,8 @@ def should_continue(state):
     return "select_tool_categories"
 
 
-def human_in_the_loop(state: State):
-    value = interrupt(f"What should I say in response to {state['messages']}")
+def human_node(state: State):
+    value = interrupt(state['messages'][-1])
     return {"messages": [{"role": "assistant", "content": value}]}
 
 
