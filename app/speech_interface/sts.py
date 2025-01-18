@@ -82,6 +82,7 @@ class ConversationManager:
         self.is_listening = True
         self.audio_playback = AudioPlayback()
         self.thread_pool = ThreadPoolExecutor(max_workers=2)
+        self.start_time = None
 
         config = DeepgramClientOptions(options={"keepalive": "true"})
         self.deepgram = DeepgramClient(
@@ -101,8 +102,11 @@ class ConversationManager:
                 sample_rate=audio.frame_rate,
             )
 
-            playback_latency = int((time.time() - start_time) * 1000)
+            end_time = time.time()
+            playback_latency = int((end_time - start_time) * 1000)
             print(f"Audio playback latency: {playback_latency}ms")
+            total_latency = int((end_time - self.start_time))
+            print(f"Total latency: {total_latency}ms")
 
             self.audio_playback.play_obj = play_obj
             self.audio_playback.is_playing = True
@@ -110,7 +114,7 @@ class ConversationManager:
         except Exception as e:
             print(f"Audio playback error: {e}")
 
-    async def process_audio(self, text: str):
+    async def text_to_speech(self, text: str):
         """Process TTS in parallel with other operations"""
         try:
             start_time = time.time()
@@ -174,7 +178,7 @@ class ConversationManager:
                 encoding="linear16",
                 channels=1,
                 sample_rate=16000,
-                endpointing=300,
+                endpointing=1000,
                 smart_format=True,
             )
 
@@ -205,9 +209,9 @@ class ConversationManager:
 
             while True:
                 try:
-                    start_time = time.time()
+                    self.start_time = time.time()
                     transcription = await self.transcription_queue.get()
-                    transcription_latency = int((time.time() - start_time) * 1000)
+                    transcription_latency = int((time.time() - self.start_time) * 1000)
                     print(f"Transcription latency: {transcription_latency}ms")
                     print(f"Received transcription: {transcription}")
 
@@ -221,7 +225,7 @@ class ConversationManager:
                     print(f"LLM processing latency: {llm_latency}ms")
                     print(f"LLM Response: {llm_response}")
 
-                    await self.process_audio(llm_response)
+                    await self.text_to_speech(llm_response)
 
                 except asyncio.CancelledError:
                     print("Conversation cancelled")
