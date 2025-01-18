@@ -94,6 +94,3 @@ def get_wolfram_tool():
         ),
         input_schema=WolframAlphaQuery,
     )
-
-
-print(len(get_wolfram_tool().description))

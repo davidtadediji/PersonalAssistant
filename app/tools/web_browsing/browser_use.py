@@ -40,22 +40,3 @@ def get_browser_task_tool():
         input_schema=BrowserTask,
     )
 
-def test_browser_task_tool():
-    test_task = (
-        "Go to Reddit, search for 'browser-use' in the search bar, "
-        "click on the first post and return the first comment."
-    )
-
-    try:
-        # Using the tool to execute the browser task
-        task_result = execute_browser_task(test_task)
-
-        # Log the result of the task
-        print(f"Task result: {task_result}")
-
-    except Exception as e:
-        # Log any error that occurs during task execution
-        print(f"Error during browser task execution: {e}")
-
-# Uncomment to test the tool
-# test_browser_task_tool()

@@ -92,38 +92,3 @@ def get_create_file_tool():
         ),
         input_schema=CreateFileInput,
     )
-
-
-import os
-from pathlib import Path
-
-
-def test_create_file():
-    # Sample data for testing
-    content = [
-        {"text": "Hello, this is a test text.", "size": 12, "align": "L", "new_line": True},
-        {"text": "This is another line in the PDF.", "size": 14, "align": "C", "new_line": True},
-    ]
-
-    # Test PDF creation
-    pdf_filename = "test_output.pdf"
-    pdf_result = create_file(pdf_filename, "pdf", content)
-    assert pdf_result == f"PDF created successfully at: {pdf_filename}", "PDF creation failed"
-    assert Path(pdf_filename).exists(), "PDF file does not exist"
-    print(f"Test passed for PDF: {pdf_result}")
-
-    # Test Text file creation
-    txt_filename = "test_output.txt"
-    txt_result = create_file(txt_filename, "txt", content)
-    assert txt_result == f"Text file created successfully at: {txt_filename}", "Text file creation failed"
-    assert Path(txt_filename).exists(), "Text file does not exist"
-    print(f"Test passed for Text file: {txt_result}")
-
-    # Cleanup: Remove created test files
-    os.remove(pdf_filename)
-    os.remove(txt_filename)
-    print("Test files cleaned up.")
-
-
-# Run the test
-test_create_file()
