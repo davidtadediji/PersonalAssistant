@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
-from app.tools.create_file import create_file
-from app.tools.database_storage.sql_database import sql_database
-from app.tools.web_browsing.browser_use import execute_browser_task
+from app.llm_compiler.tools.create_file import create_file
+from app.llm_compiler.tools.database_storage.sql_database import sql_database
+from app.llm_compiler.tools.web_browsing.browser_use import execute_browser_task
 
 
 def test_create_file():

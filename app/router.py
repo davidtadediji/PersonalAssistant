@@ -1,10 +1,9 @@
 # router.py
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from graph import graph
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel
-
-from graph import graph
 
 router = APIRouter(
     prefix="/api",

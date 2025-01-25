@@ -134,7 +134,6 @@ Available actions:
  - Always call join as the last action in the plan. Say '<END_OF_PLAN>' after you call join.
 """
 
-
 # Updated regex pattern to validate the assistant's response
 response_pattern = re.compile(
     r"^(\d+\.\s+\w+\([^)]+\)\n)+join\(\)\n<END_OF_PLAN>$",

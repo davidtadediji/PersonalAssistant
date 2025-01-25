@@ -1,10 +1,40 @@
-{"user_input": "Find the nearest Italian restaurant to Central Park and book a table for 4 at 7 PM.", "label": "1. find_nearest_restaurant(location='Central Park', cuisine='Italian')\n2. book_table(restaurant_id=$1['id'], time='19:00', guests=4)\n3. join()\n<END_OF_PLAN>"}
-{"user_input": "Check the traffic on the route from Times Square to JFK Airport and suggest an alternate route if necessary.", "label": "1. check_traffic(route='Times Square to JFK Airport')\n2. suggest_alternate_route(route='Times Square to JFK Airport', traffic_data=$1)\n3. join()\n<END_OF_PLAN>"}
-{"user_input": "Find a hotel in San Francisco for check-in on 2023-12-25 and check-out on 2023-12-30.", "label": "1. find_hotels(location='San Francisco', check_in='2023-12-25', check_out='2023-12-30')\n2. join()\n<END_OF_PLAN>"}
-{"user_input": "Book a taxi from my current location to the nearest airport.", "label": "1. book_taxi(pickup_location='current location', destination='nearest airport')\n2. join()\n<END_OF_PLAN>"}
-{"user_input": "Check the weather forecast for Paris on 2023-12-15.", "label": "1. check_weather_forecast(location='Paris', date='2023-12-15')\n2. join()\n<END_OF_PLAN>"}
-{"user_input": "Plan a 5-day itinerary for a trip to Tokyo.", "label": "1. plan_itinerary(location='Tokyo', days=5)\n2. join()\n<END_OF_PLAN>"}
-{"user_input": "Find local events in New York on 2023-12-20 and book tickets for 2 people.", "label": "1. find_local_events(location='New York', date='2023-12-20')\n2. book_event_tickets(event_id=$1[0]['id'], tickets=2)\n3. join()\n<END_OF_PLAN>"}
-{"user_input": "Order pizza and pasta from the nearest Italian restaurant.", "label": "1. find_nearest_restaurant(location='current location', cuisine='Italian')\n2. order_food(restaurant_id=$1['id'], items=['pizza', 'pasta'])\n3. join()\n<END_OF_PLAN>"}
-{"user_input": "Track the status of my food order with ID 12345.", "label": "1. track_order(order_id=12345)\n2. join()\n<END_OF_PLAN>"}
-{"user_input": "Cancel my hotel booking with ID 67890.", "label": "1. cancel_hotel_booking(booking_id=67890)\n2. join()\n<END_OF_PLAN>"}
+{
+  "user_input": "Find the nearest Italian restaurant to Central Park and book a table for 4 at 7 PM.",
+  "label": "1. find_nearest_restaurant(location='Central Park', cuisine='Italian')\n2. book_table(restaurant_id=$1['id'], time='19:00', guests=4)\n3. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Check the traffic on the route from Times Square to JFK Airport and suggest an alternate route if necessary.",
+  "label": "1. check_traffic(route='Times Square to JFK Airport')\n2. suggest_alternate_route(route='Times Square to JFK Airport', traffic_data=$1)\n3. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Find a hotel in San Francisco for check-in on 2023-12-25 and check-out on 2023-12-30.",
+  "label": "1. find_hotels(location='San Francisco', check_in='2023-12-25', check_out='2023-12-30')\n2. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Book a taxi from my current location to the nearest airport.",
+  "label": "1. book_taxi(pickup_location='current location', destination='nearest airport')\n2. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Check the weather forecast for Paris on 2023-12-15.",
+  "label": "1. check_weather_forecast(location='Paris', date='2023-12-15')\n2. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Plan a 5-day itinerary for a trip to Tokyo.",
+  "label": "1. plan_itinerary(location='Tokyo', days=5)\n2. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Find local events in New York on 2023-12-20 and book tickets for 2 people.",
+  "label": "1. find_local_events(location='New York', date='2023-12-20')\n2. book_event_tickets(event_id=$1[0]['id'], tickets=2)\n3. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Order pizza and pasta from the nearest Italian restaurant.",
+  "label": "1. find_nearest_restaurant(location='current location', cuisine='Italian')\n2. order_food(restaurant_id=$1['id'], items=['pizza', 'pasta'])\n3. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Track the status of my food order with ID 12345.",
+  "label": "1. track_order(order_id=12345)\n2. join()\n<END_OF_PLAN>"
+}
+{
+  "user_input": "Cancel my hotel booking with ID 67890.",
+  "label": "1. cancel_hotel_booking(booking_id=67890)\n2. join()\n<END_OF_PLAN>"
+}

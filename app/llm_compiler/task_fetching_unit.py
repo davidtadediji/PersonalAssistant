@@ -10,10 +10,10 @@ from langchain_core.runnables import (
 from typing_extensions import TypedDict
 
 from app.llm_compiler.output_parser import Task
-from app.llm_compiler.planner import  create_planner
+from app.llm_compiler.planner import create_planner
 from app.llm_compiler.prompts import base_planner_prompt
-from app.tools.tool_categories import filter_tools_by_category
-from app.tools.tool_registry import tools_registry
+from app.llm_compiler.tools.tool_categories import filter_tools_by_category
+from app.llm_compiler.tools.tool_registry import tools_registry
 
 
 def _get_observations(messages: List[BaseMessage]) -> Dict[int, Any]:
@@ -54,8 +54,8 @@ def _execute_task(task, observations, config):
         return tool_to_use.invoke(resolved_args, config)
     except Exception as e:
         return (
-            f"ERROR(Failed to call {tool_to_use.name} with args {args}."
-            + f" Args resolved to {resolved_args}. Error: {repr(e)})"
+                f"ERROR(Failed to call {tool_to_use.name} with args {args}."
+                + f" Args resolved to {resolved_args}. Error: {repr(e)})"
         )
 
 
@@ -109,7 +109,7 @@ def schedule_task(task_inputs, config):
 
 
 def schedule_pending_task(
-    task: Task, observations: Dict[int, Any], retry_after: float = 0.2
+        task: Task, observations: Dict[int, Any], retry_after: float = 0.2
 ):
     while True:
         deps = task["dependencies"]
@@ -150,9 +150,9 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
             )
             args_for_tasks[task["idx"]] = task["args"]
             if (
-                # Depends on other tasks
-                deps
-                and (any([dep not in observations for dep in deps]))
+                    # Depends on other tasks
+                    deps
+                    and (any([dep not in observations for dep in deps]))
             ):
                 futures.append(
                     executor.submit(
@@ -188,6 +188,7 @@ def schedule_tasks(scheduler_input: SchedulerInput) -> List[FunctionMessage]:
 import itertools
 
 from app.llm_compiler.llm_initializer import llm
+
 
 @as_runnable
 def plan_and_schedule(state):

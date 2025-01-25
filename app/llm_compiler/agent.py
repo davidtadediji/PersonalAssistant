@@ -5,7 +5,7 @@ from typing import List
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph, START
-from langgraph.graph.message import add_messages
+from langgraph.graph.message import add_messages, RemoveMessage
 from langgraph.pregel.retry import RetryPolicy
 from langgraph.types import interrupt
 from pydantic import BaseModel, Field
@@ -14,7 +14,12 @@ from typing_extensions import TypedDict
 from app.llm_compiler.joiner import joiner
 from app.llm_compiler.prompts import TOOL_CATEGORY_PROMPT
 from app.llm_compiler.task_fetching_unit import plan_and_schedule
-from app.tools.tool_categories import get_all_tool_summaries
+from app.llm_compiler.tools.tool_categories import get_all_tool_summaries
+
+# db_path = "state_db/example.db"
+#
+# conn = sqlite3.connect(db_path, check_same_thread=False)
+# memory = SqliteSaver(conn)
 
 
 class ToolCategoryResponse(TypedDict):
@@ -26,6 +31,7 @@ class ToolCategoryResponse(TypedDict):
 class State(TypedDict):
     messages: Annotated[list, add_messages]
     selected_tool_categories: ToolCategoryResponse
+    summary: str
 
 
 llm = ChatOpenAI(model=os.getenv("OPENAI_PLANNING_MODEL"))
@@ -36,6 +42,7 @@ class QueryForTools(BaseModel):
     """Generate a query for additional tools."""
 
     query: str = Field(..., description="Query for additional tools.")
+
 
 def select_tool_categories(state: State):
     # Get the last user message
@@ -69,6 +76,36 @@ def select_tool_categories(state: State):
     state["selected_tool_categories"] = tool_category_response
 
     return state
+
+
+def summarize_conversation(state: State):
+    summary = state.get("summary", "")
+
+    if summary:
+        summary_message = (
+            f"This is summary of the interaction to date: {summary}\n\n"
+            "Extend the summary by taking into account the new messages above:"
+        )
+
+    else:
+        summary_message = "Create a summary of the conversation above:"
+
+    messages = state["messages"] + [HumanMessage(content=summary_message)]
+    response = llm.invoke(messages)
+
+    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
+    return {"summary": response.content, "messages": delete_messages}
+
+
+def should_summarize(state: State):
+    """Return the next node to execute."""
+
+    messages = state["messages"]
+
+    if len(messages) > 6:
+        return "summarize_conversation"
+
+    return END
 
 
 def should_continue(state):

@@ -8,6 +8,7 @@ from app.llm_compiler.prompts import joiner_prompt
 
 load_dotenv()
 
+
 class FinalResponse(BaseModel):
     """The final response/answer."""
 
@@ -27,6 +28,7 @@ class JoinOutputs(BaseModel):
         description="The chain of thought reasoning for the selected action"
     )
     action: Union[FinalResponse, RePlan]
+
 
 from app.llm_compiler.llm_initializer import llm
 

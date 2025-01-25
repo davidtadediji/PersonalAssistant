@@ -1,50 +1,800 @@
-{"messages": [{"role": "system", "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"}, {"role": "user", "content": "Compose an email to john.doe@example.com with the subject 'Meeting Reminder' and body 'Please remember the meeting tomorrow.', then send it."}, {"role": "assistant", "content": "1. compose_email(recipient='john.doe@example.com', subject='Meeting Reminder', body='Please remember the meeting tomorrow.')\n2. send_email(email_id=$1)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... search_products(category: str) -> List[Dict[str, Any]]; add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool"}, {"role": "user", "content": "Search for products in the 'Electronics' category and add the first one to the cart."}, {"role": "assistant", "content": "1. search_products(category='Electronics')\n2. add_to_cart(product_id=$1[0]['id'], quantity=1)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"}, {"role": "user", "content": "Search for flights from NYC to LAX on 2023-10-15, book the first flight, and check its status."}, {"role": "assistant", "content": "1. search_flights(origin='NYC', destination='LAX', date='2023-10-15')\n2. book_flight(flight_id=$1[0]['id'])\n3. get_flight_status(flight_id=$1[0]['id'])\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"}, {"role": "user", "content": "Get the balance of account 12345 and transfer $500 to account 67890."}, {"role": "assistant", "content": "1. get_account_balance(account_id=12345)\n2. transfer_funds(from_account=12345, to_account=67890, amount=500.0)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"}, {"role": "user", "content": "Post 'Hello World!' and like the post."}, {"role": "assistant", "content": "1. post_status(message='Hello World!')\n2. like_post(post_id=$1)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"}, {"role": "user", "content": "Search for books titled 'Python Programming', borrow the first one, and renew it."}, {"role": "assistant", "content": "1. search_books(title='Python Programming')\n2. borrow_book(book_id=$1[0]['id'])\n3. renew_book(book_id=$1[0]['id'])\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"}, {"role": "user", "content": "Create an event titled 'Team Meeting' on 2023-10-20 at 14:00, invite Alice and Bob, and send a reminder."}, {"role": "assistant", "content": "1. create_event(title='Team Meeting', date='2023-10-20', time='14:00')\n2. invite_guests(event_id=$1, guests=['Alice', 'Bob'])\n3. send_reminder(event_id=$1)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"}, {"role": "user", "content": "Log a 30-minute run, set a fitness goal to run 5 times a week, and track progress."}, {"role": "assistant", "content": "1. log_workout(activity='running', duration=30)\n2. set_fitness_goal(goal='run', target=5)\n3. track_progress()\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"}, {"role": "user", "content": "Create a file 'notes.txt' with some content, read its content, and delete it."}, {"role": "assistant", "content": "1. create_file(file_path='notes.txt', content='These are my notes.')\n2. read_file(file_path='notes.txt')\n3. delete_file(file_path='notes.txt')\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"}, {"role": "user", "content": "Create a post titled 'My First Blog' with some content, add a tag 'blog', and publish it."}, {"role": "assistant", "content": "1. create_post(title='My First Blog', content='This is my first blog post.')\n2. add_tag(post_id=$1, tag='blog')\n3. publish_post(post_id=$1)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"}, {"role": "user", "content": "Filter emails in the 'Important' folder, mark the first one as read, and delete the second one."}, {"role": "assistant", "content": "1. filter_emails(folder='Important')\n2. mark_as_read(email_id=$1[0])\n3. delete_email(email_id=$1[1])\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"}, {"role": "user", "content": "View the cart, remove the first product, and checkout."}, {"role": "assistant", "content": "1. view_cart()\n2. remove_from_cart(product_id=$1['items'][0]['id'])\n3. checkout()\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"}, {"role": "user", "content": "Search for flights from LAX to JFK on 2023-11-01, book the second flight, and check in."}, {"role": "assistant", "content": "1. search_flights(origin='LAX', destination='JFK', date='2023-11-01')\n2. book_flight(flight_id=$1[1]['id'])\n3. check_in(flight_id=$1[1]['id'])\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"}, {"role": "user", "content": "Deposit $200 into account 12345, pay a bill of $100 from the same account, and get the transaction history."}, {"role": "assistant", "content": "1. deposit_money(account_id=12345, amount=200.0)\n2. pay_bill(account_id=12345, bill_id=54321, amount=100.0)\n3. get_transaction_history(account_id=12345)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"}, {"role": "user", "content": "Post 'Good morning!' and share the post with friends."}, {"role": "assistant", "content": "1. post_status(message='Good morning!')\n2. share_post(post_id=$1)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"}, {"role": "user", "content": "Search for books by author 'J.K. Rowling', hold the first available book, and renew a borrowed book."}, {"role": "assistant", "content": "1. search_books(author='J.K. Rowling')\n2. hold_book(book_id=$1[0]['id'])\n3. renew_book(book_id=98765)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"}, {"role": "user", "content": "Update the event 'Team Meeting' to 2023-10-25 at 15:00 and cancel the previous event."}, {"role": "assistant", "content": "1. update_event(event_id=4321, new_date='2023-10-25', new_time='15:00')\n2. cancel_event(event_id=4321)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"}, {"role": "user", "content": "Log a 45-minute cycling session, track progress, and reset the progress."}, {"role": "assistant", "content": "1. log_workout(activity='cycling', duration=45)\n2. track_progress()\n3. reset_progress()\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"}, {"role": "user", "content": "Read the content of 'report.txt', write it to 'backup.txt', and rename 'report.txt' to 'old_report.txt'."}, {"role": "assistant", "content": "1. read_file(file_path='report.txt')\n2. write_file(file_path='backup.txt', content=$1)\n3. rename_file(old_path='report.txt', new_path='old_report.txt')\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"}, {"role": "user", "content": "Edit the post with ID 12345 to new content, add a tag 'update', and delete the old post."}, {"role": "assistant", "content": "1. edit_post(post_id=12345, new_content='Updated content for the post.')\n2. add_tag(post_id=12345, tag='update')\n3. delete_post(post_id=12345)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"}, {"role": "user", "content": "Compose two separate emails to different recipients."}, {"role": "assistant", "content": "1. compose_email(recipient='alice@example.com', subject='Hello', body='Hi Alice!')\n2. compose_email(recipient='bob@example.com', subject='Greetings', body='Hi Bob!')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"}, {"role": "user", "content": "Add two different products to the cart and view the cart."}, {"role": "assistant", "content": "1. add_to_cart(product_id=101, quantity=2)\n2. add_to_cart(product_id=202, quantity=1)\n3. view_cart()\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"}, {"role": "user", "content": "Search for flights from SFO to LHR on two different dates."}, {"role": "assistant", "content": "1. search_flights(origin='SFO', destination='LHR', date='2023-10-15')\n2. search_flights(origin='SFO', destination='LHR', date='2023-10-20')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"}, {"role": "user", "content": "Get the balance of two different accounts."}, {"role": "assistant", "content": "1. get_account_balance(account_id=12345)\n2. get_account_balance(account_id=67890)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"}, {"role": "user", "content": "Like two different posts."}, {"role": "assistant", "content": "1. like_post(post_id=1111)\n2. like_post(post_id=2222)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"}, {"role": "user", "content": "Borrow two different books."}, {"role": "assistant", "content": "1. borrow_book(book_id=1001)\n2. borrow_book(book_id=1002)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"}, {"role": "user", "content": "Create two different events on the same day."}, {"role": "assistant", "content": "1. create_event(title='Morning Meeting', date='2023-10-25', time='10:00')\n2. create_event(title='Evening Dinner', date='2023-10-25', time='18:00')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"}, {"role": "user", "content": "Log two different workouts on the same day."}, {"role": "assistant", "content": "1. log_workout(activity='running', duration=30)\n2. log_workout(activity='swimming', duration=45)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"}, {"role": "user", "content": "Create two files with different contents."}, {"role": "assistant", "content": "1. create_file(file_path='file1.txt', content='Content for file1.')\n2. create_file(file_path='file2.txt', content='Content for file2.')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"}, {"role": "user", "content": "Create two posts with different titles and contents."}, {"role": "assistant", "content": "1. create_post(title='Post One', content='This is the first post.')\n2. create_post(title='Post Two', content='This is the second post.')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"}, {"role": "user", "content": "Send two emails to the same recipient with different subjects."}, {"role": "assistant", "content": "1. compose_email(recipient='john.doe@example.com', subject='First Email', body='This is the first email.')\n2. send_email(email_id=$1)\n3. compose_email(recipient='john.doe@example.com', subject='Second Email', body='This is the second email.')\n4. send_email(email_id=$3)\n5. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"}, {"role": "user", "content": "Add a product to the cart, remove it, and then add another product."}, {"role": "assistant", "content": "1. add_to_cart(product_id=303, quantity=1)\n2. remove_from_cart(product_id=303)\n3. add_to_cart(product_id=404, quantity=2)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"}, {"role": "user", "content": "Book two flights on different dates."}, {"role": "assistant", "content": "1. search_flights(origin='LAX', destination='MIA', date='2023-11-01')\n2. book_flight(flight_id=$1[0]['id'])\n3. search_flights(origin='LAX', destination='MIA', date='2023-11-05')\n4. book_flight(flight_id=$3[0]['id'])\n5. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool; get_account_balance(account_id: int) -> float"}, {"role": "user", "content": "Transfer funds from one account to two different accounts."}, {"role": "assistant", "content": "1. transfer_funds(from_account=12345, to_account=67890, amount=200.0)\n2. transfer_funds(from_account=12345, to_account=54321, amount=150.0)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"}, {"role": "user", "content": "Post two different status updates."}, {"role": "assistant", "content": "1. post_status(message='Feeling great today!')\n2. post_status(message='Just had a delicious meal.')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"}, {"role": "user", "content": "Renew two different books."}, {"role": "assistant", "content": "1. renew_book(book_id=1111)\n2. renew_book(book_id=2222)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"}, {"role": "user", "content": "Invite guests to two different events."}, {"role": "assistant", "content": "1. create_event(title='Project Launch', date='2023-10-27', time='14:00')\n2. invite_guests(event_id=$1, guests=['Alice', 'Charlie'])\n3. create_event(title='Team Lunch', date='2023-10-28', time='12:00')\n4. invite_guests(event_id=$3, guests=['Bob', 'Dave'])\n5. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"}, {"role": "user", "content": "Set two different fitness goals."}, {"role": "assistant", "content": "1. set_fitness_goal(goal='run', target=4)\n2. set_fitness_goal(goal='swim', target=3)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"}, {"role": "user", "content": "Read two different files and write their contents to a third file."}, {"role": "assistant", "content": "1. read_file(file_path='fileA.txt')\n2. read_file(file_path='fileB.txt')\n3. write_file(file_path='combined.txt', content=$1 + $2)\n4. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"}, {"role": "user", "content": "Edit two different posts."}, {"role": "assistant", "content": "1. edit_post(post_id=2468, new_content='Updated content for post one.')\n2. edit_post(post_id=1357, new_content='Updated content for post two.')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"}, {"role": "user", "content": "Compose an email, but do not send it."}, {"role": "assistant", "content": "1. compose_email(recipient='jane.doe@example.com', subject='Test Email', body='This is a test.')\n2. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"}, {"role": "user", "content": "Add a product to the cart and then view the cart."}, {"role": "assistant", "content": "1. add_to_cart(product_id=505, quantity=3)\n2. view_cart()\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"}, {"role": "user", "content": "Search for flights and get the status of a previously booked flight."}, {"role": "assistant", "content": "1. search_flights(origin='JFK', destination='LAX', date='2023-11-10')\n2. get_flight_status(flight_id=98765)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"}, {"role": "user", "content": "Deposit money into two different accounts."}, {"role": "assistant", "content": "1. deposit_money(account_id=12345, amount=300.0)\n2. deposit_money(account_id=67890, amount=250.0)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"}, {"role": "user", "content": "Like a post and comment on another post."}, {"role": "assistant", "content": "1. like_post(post_id=3456)\n2. comment_on_post(post_id=7890, comment='Great post!')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"}, {"role": "user", "content": "Borrow a book and hold another book."}, {"role": "assistant", "content": "1. borrow_book(book_id=3030)\n2. hold_book(book_id=4040)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"}, {"role": "user", "content": "Create an event and send a reminder."}, {"role": "assistant", "content": "1. create_event(title='Annual Party', date='2023-12-31', time='20:00')\n2. send_reminder(event_id=$1)\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"}, {"role": "user", "content": "Log a workout and track progress."}, {"role": "assistant", "content": "1. log_workout(activity='cycling', duration=60)\n2. track_progress()\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"}, {"role": "user", "content": "Copy a file and delete the original."}, {"role": "assistant", "content": "1. copy_file(source='original.txt', destination='copy.txt')\n2. delete_file(file_path='original.txt')\n3. join()\n<END_OF_PLAN>"}]}
-{"messages": [{"role": "system", "content": "generate action plans ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"}, {"role": "user", "content": "Delete a post and create a new one."}, {"role": "assistant", "content": "1. delete_post(post_id=8642)\n2. create_post(title='New Post', content='This is a new post.')\n3. join()\n<END_OF_PLAN>"}]}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"
+    },
+    {
+      "role": "user",
+      "content": "Compose an email to john.doe@example.com with the subject 'Meeting Reminder' and body 'Please remember the meeting tomorrow.', then send it."
+    },
+    {
+      "role": "assistant",
+      "content": "1. compose_email(recipient='john.doe@example.com', subject='Meeting Reminder', body='Please remember the meeting tomorrow.')\n2. send_email(email_id=$1)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... search_products(category: str) -> List[Dict[str, Any]]; add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for products in the 'Electronics' category and add the first one to the cart."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_products(category='Electronics')\n2. add_to_cart(product_id=$1[0]['id'], quantity=1)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for flights from NYC to LAX on 2023-10-15, book the first flight, and check its status."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_flights(origin='NYC', destination='LAX', date='2023-10-15')\n2. book_flight(flight_id=$1[0]['id'])\n3. get_flight_status(flight_id=$1[0]['id'])\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Get the balance of account 12345 and transfer $500 to account 67890."
+    },
+    {
+      "role": "assistant",
+      "content": "1. get_account_balance(account_id=12345)\n2. transfer_funds(from_account=12345, to_account=67890, amount=500.0)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Post 'Hello World!' and like the post."
+    },
+    {
+      "role": "assistant",
+      "content": "1. post_status(message='Hello World!')\n2. like_post(post_id=$1)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for books titled 'Python Programming', borrow the first one, and renew it."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_books(title='Python Programming')\n2. borrow_book(book_id=$1[0]['id'])\n3. renew_book(book_id=$1[0]['id'])\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create an event titled 'Team Meeting' on 2023-10-20 at 14:00, invite Alice and Bob, and send a reminder."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_event(title='Team Meeting', date='2023-10-20', time='14:00')\n2. invite_guests(event_id=$1, guests=['Alice', 'Bob'])\n3. send_reminder(event_id=$1)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Log a 30-minute run, set a fitness goal to run 5 times a week, and track progress."
+    },
+    {
+      "role": "assistant",
+      "content": "1. log_workout(activity='running', duration=30)\n2. set_fitness_goal(goal='run', target=5)\n3. track_progress()\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create a file 'notes.txt' with some content, read its content, and delete it."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_file(file_path='notes.txt', content='These are my notes.')\n2. read_file(file_path='notes.txt')\n3. delete_file(file_path='notes.txt')\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create a post titled 'My First Blog' with some content, add a tag 'blog', and publish it."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_post(title='My First Blog', content='This is my first blog post.')\n2. add_tag(post_id=$1, tag='blog')\n3. publish_post(post_id=$1)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"
+    },
+    {
+      "role": "user",
+      "content": "Filter emails in the 'Important' folder, mark the first one as read, and delete the second one."
+    },
+    {
+      "role": "assistant",
+      "content": "1. filter_emails(folder='Important')\n2. mark_as_read(email_id=$1[0])\n3. delete_email(email_id=$1[1])\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"
+    },
+    {
+      "role": "user",
+      "content": "View the cart, remove the first product, and checkout."
+    },
+    {
+      "role": "assistant",
+      "content": "1. view_cart()\n2. remove_from_cart(product_id=$1['items'][0]['id'])\n3. checkout()\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for flights from LAX to JFK on 2023-11-01, book the second flight, and check in."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_flights(origin='LAX', destination='JFK', date='2023-11-01')\n2. book_flight(flight_id=$1[1]['id'])\n3. check_in(flight_id=$1[1]['id'])\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Deposit $200 into account 12345, pay a bill of $100 from the same account, and get the transaction history."
+    },
+    {
+      "role": "assistant",
+      "content": "1. deposit_money(account_id=12345, amount=200.0)\n2. pay_bill(account_id=12345, bill_id=54321, amount=100.0)\n3. get_transaction_history(account_id=12345)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Post 'Good morning!' and share the post with friends."
+    },
+    {
+      "role": "assistant",
+      "content": "1. post_status(message='Good morning!')\n2. share_post(post_id=$1)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for books by author 'J.K. Rowling', hold the first available book, and renew a borrowed book."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_books(author='J.K. Rowling')\n2. hold_book(book_id=$1[0]['id'])\n3. renew_book(book_id=98765)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Update the event 'Team Meeting' to 2023-10-25 at 15:00 and cancel the previous event."
+    },
+    {
+      "role": "assistant",
+      "content": "1. update_event(event_id=4321, new_date='2023-10-25', new_time='15:00')\n2. cancel_event(event_id=4321)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Log a 45-minute cycling session, track progress, and reset the progress."
+    },
+    {
+      "role": "assistant",
+      "content": "1. log_workout(activity='cycling', duration=45)\n2. track_progress()\n3. reset_progress()\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Read the content of 'report.txt', write it to 'backup.txt', and rename 'report.txt' to 'old_report.txt'."
+    },
+    {
+      "role": "assistant",
+      "content": "1. read_file(file_path='report.txt')\n2. write_file(file_path='backup.txt', content=$1)\n3. rename_file(old_path='report.txt', new_path='old_report.txt')\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Edit the post with ID 12345 to new content, add a tag 'update', and delete the old post."
+    },
+    {
+      "role": "assistant",
+      "content": "1. edit_post(post_id=12345, new_content='Updated content for the post.')\n2. add_tag(post_id=12345, tag='update')\n3. delete_post(post_id=12345)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"
+    },
+    {
+      "role": "user",
+      "content": "Compose two separate emails to different recipients."
+    },
+    {
+      "role": "assistant",
+      "content": "1. compose_email(recipient='alice@example.com', subject='Hello', body='Hi Alice!')\n2. compose_email(recipient='bob@example.com', subject='Greetings', body='Hi Bob!')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"
+    },
+    {
+      "role": "user",
+      "content": "Add two different products to the cart and view the cart."
+    },
+    {
+      "role": "assistant",
+      "content": "1. add_to_cart(product_id=101, quantity=2)\n2. add_to_cart(product_id=202, quantity=1)\n3. view_cart()\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for flights from SFO to LHR on two different dates."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_flights(origin='SFO', destination='LHR', date='2023-10-15')\n2. search_flights(origin='SFO', destination='LHR', date='2023-10-20')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Get the balance of two different accounts."
+    },
+    {
+      "role": "assistant",
+      "content": "1. get_account_balance(account_id=12345)\n2. get_account_balance(account_id=67890)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Like two different posts."
+    },
+    {
+      "role": "assistant",
+      "content": "1. like_post(post_id=1111)\n2. like_post(post_id=2222)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Borrow two different books."
+    },
+    {
+      "role": "assistant",
+      "content": "1. borrow_book(book_id=1001)\n2. borrow_book(book_id=1002)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create two different events on the same day."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_event(title='Morning Meeting', date='2023-10-25', time='10:00')\n2. create_event(title='Evening Dinner', date='2023-10-25', time='18:00')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Log two different workouts on the same day."
+    },
+    {
+      "role": "assistant",
+      "content": "1. log_workout(activity='running', duration=30)\n2. log_workout(activity='swimming', duration=45)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create two files with different contents."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_file(file_path='file1.txt', content='Content for file1.')\n2. create_file(file_path='file2.txt', content='Content for file2.')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create two posts with different titles and contents."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_post(title='Post One', content='This is the first post.')\n2. create_post(title='Post Two', content='This is the second post.')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"
+    },
+    {
+      "role": "user",
+      "content": "Send two emails to the same recipient with different subjects."
+    },
+    {
+      "role": "assistant",
+      "content": "1. compose_email(recipient='john.doe@example.com', subject='First Email', body='This is the first email.')\n2. send_email(email_id=$1)\n3. compose_email(recipient='john.doe@example.com', subject='Second Email', body='This is the second email.')\n4. send_email(email_id=$3)\n5. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"
+    },
+    {
+      "role": "user",
+      "content": "Add a product to the cart, remove it, and then add another product."
+    },
+    {
+      "role": "assistant",
+      "content": "1. add_to_cart(product_id=303, quantity=1)\n2. remove_from_cart(product_id=303)\n3. add_to_cart(product_id=404, quantity=2)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Book two flights on different dates."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_flights(origin='LAX', destination='MIA', date='2023-11-01')\n2. book_flight(flight_id=$1[0]['id'])\n3. search_flights(origin='LAX', destination='MIA', date='2023-11-05')\n4. book_flight(flight_id=$3[0]['id'])\n5. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool; get_account_balance(account_id: int) -> float"
+    },
+    {
+      "role": "user",
+      "content": "Transfer funds from one account to two different accounts."
+    },
+    {
+      "role": "assistant",
+      "content": "1. transfer_funds(from_account=12345, to_account=67890, amount=200.0)\n2. transfer_funds(from_account=12345, to_account=54321, amount=150.0)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Post two different status updates."
+    },
+    {
+      "role": "assistant",
+      "content": "1. post_status(message='Feeling great today!')\n2. post_status(message='Just had a delicious meal.')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Renew two different books."
+    },
+    {
+      "role": "assistant",
+      "content": "1. renew_book(book_id=1111)\n2. renew_book(book_id=2222)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Invite guests to two different events."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_event(title='Project Launch', date='2023-10-27', time='14:00')\n2. invite_guests(event_id=$1, guests=['Alice', 'Charlie'])\n3. create_event(title='Team Lunch', date='2023-10-28', time='12:00')\n4. invite_guests(event_id=$3, guests=['Bob', 'Dave'])\n5. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Set two different fitness goals."
+    },
+    {
+      "role": "assistant",
+      "content": "1. set_fitness_goal(goal='run', target=4)\n2. set_fitness_goal(goal='swim', target=3)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Read two different files and write their contents to a third file."
+    },
+    {
+      "role": "assistant",
+      "content": "1. read_file(file_path='fileA.txt')\n2. read_file(file_path='fileB.txt')\n3. write_file(file_path='combined.txt', content=$1 + $2)\n4. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Edit two different posts."
+    },
+    {
+      "role": "assistant",
+      "content": "1. edit_post(post_id=2468, new_content='Updated content for post one.')\n2. edit_post(post_id=1357, new_content='Updated content for post two.')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... compose_email(recipient: str, subject: str, body: str) -> int; send_email(email_id: int) -> bool; delete_email(email_id: int) -> bool; mark_as_read(email_id: int) -> bool; filter_emails(folder: str) -> List[int]"
+    },
+    {
+      "role": "user",
+      "content": "Compose an email, but do not send it."
+    },
+    {
+      "role": "assistant",
+      "content": "1. compose_email(recipient='jane.doe@example.com', subject='Test Email', body='This is a test.')\n2. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... add_to_cart(product_id: int, quantity: int) -> bool; remove_from_cart(product_id: int) -> bool; view_cart() -> Dict[str, Any]; checkout() -> bool; search_products(category: str) -> List[Dict[str, Any]]"
+    },
+    {
+      "role": "user",
+      "content": "Add a product to the cart and then view the cart."
+    },
+    {
+      "role": "assistant",
+      "content": "1. add_to_cart(product_id=505, quantity=3)\n2. view_cart()\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... search_flights(origin: str, destination: str, date: str) -> List[Dict[str, Any]]; book_flight(flight_id: int) -> bool; cancel_flight(flight_id: int) -> bool; get_flight_status(flight_id: int) -> str; check_in(flight_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Search for flights and get the status of a previously booked flight."
+    },
+    {
+      "role": "assistant",
+      "content": "1. search_flights(origin='JFK', destination='LAX', date='2023-11-10')\n2. get_flight_status(flight_id=98765)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... get_account_balance(account_id: int) -> float; transfer_funds(from_account: int, to_account: int, amount: float) -> bool; pay_bill(account_id: int, bill_id: int, amount: float) -> bool; get_transaction_history(account_id: int) -> List[Dict[str, Any]]; deposit_money(account_id: int, amount: float) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Deposit money into two different accounts."
+    },
+    {
+      "role": "assistant",
+      "content": "1. deposit_money(account_id=12345, amount=300.0)\n2. deposit_money(account_id=67890, amount=250.0)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... post_status(message: str) -> int; like_post(post_id: int) -> bool; comment_on_post(post_id: int, comment: str) -> bool; share_post(post_id: int) -> bool; delete_post(post_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Like a post and comment on another post."
+    },
+    {
+      "role": "assistant",
+      "content": "1. like_post(post_id=3456)\n2. comment_on_post(post_id=7890, comment='Great post!')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... search_books(title: str) -> List[Dict[str, Any]]; borrow_book(book_id: int) -> bool; return_book(book_id: int) -> bool; renew_book(book_id: int) -> bool; hold_book(book_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Borrow a book and hold another book."
+    },
+    {
+      "role": "assistant",
+      "content": "1. borrow_book(book_id=3030)\n2. hold_book(book_id=4040)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... create_event(title: str, date: str, time: str) -> int; invite_guests(event_id: int, guests: List[str]) -> bool; send_reminder(event_id: int) -> bool; update_event(event_id: int, new_date: str, new_time: str) -> bool; cancel_event(event_id: int) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Create an event and send a reminder."
+    },
+    {
+      "role": "assistant",
+      "content": "1. create_event(title='Annual Party', date='2023-12-31', time='20:00')\n2. send_reminder(event_id=$1)\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... log_workout(activity: str, duration: int) -> bool; get_workout_summary() -> Dict[str, Any]; set_fitness_goal(goal: str, target: int) -> bool; track_progress() -> Dict[str, Any]; reset_progress() -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Log a workout and track progress."
+    },
+    {
+      "role": "assistant",
+      "content": "1. log_workout(activity='cycling', duration=60)\n2. track_progress()\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plan ... create_file(file_path: str, content: str) -> bool; read_file(file_path: str) -> str; delete_file(file_path: str) -> bool; rename_file(old_path: str, new_path: str) -> bool; copy_file(source: str, destination: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Copy a file and delete the original."
+    },
+    {
+      "role": "assistant",
+      "content": "1. copy_file(source='original.txt', destination='copy.txt')\n2. delete_file(file_path='original.txt')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "generate action plans ... create_post(title: str, content: str) -> int; edit_post(post_id: int, new_content: str) -> bool; publish_post(post_id: int) -> bool; delete_post(post_id: int) -> bool; add_tag(post_id: int, tag: str) -> bool"
+    },
+    {
+      "role": "user",
+      "content": "Delete a post and create a new one."
+    },
+    {
+      "role": "assistant",
+      "content": "1. delete_post(post_id=8642)\n2. create_post(title='New Post', content='This is a new post.')\n3. join()\n<END_OF_PLAN>"
+    }
+  ]
+}
