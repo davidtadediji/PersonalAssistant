@@ -13,7 +13,7 @@ __pycache__/
 
 *.wav
 # Checkpoints
-app/checkpoints
+src/checkpoints
 
 PROJECT_PATH.md
 
@@ -23,3 +23,5 @@ PROJECT_PATH.md
 
 **/cache/
 *.txt
+
+**/*.yaml
